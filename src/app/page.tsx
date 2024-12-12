@@ -14,14 +14,16 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { LoginForm } from "./auth/login"
+import { RegisterForm } from "./auth/register"
 
 
 export default function Page() {
   return (
     <SidebarProvider>
-      <AppSidebar />
-
-      <NavMenu/>
+      {/* <AppSidebar /> */}
+      {/* <LoginForm /> */}
+      <RegisterForm />
       {/* <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />

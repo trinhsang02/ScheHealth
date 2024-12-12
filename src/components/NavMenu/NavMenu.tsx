@@ -12,6 +12,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
+import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar"
 
 const components: { title: string; href: string; description: string }[] = [
   {
@@ -119,6 +120,13 @@ export function NavMenu() {
               Đăng nhập
             </NavigationMenuLink>
           </Link>
+        </NavigationMenuItem>
+
+        <NavigationMenuItem>
+          <Avatar>
+            <AvatarImage src="{UIT}" alt="User Avatar"/>
+            <AvatarFallback/>
+          </Avatar>
         </NavigationMenuItem>
 
       </NavigationMenuList>
