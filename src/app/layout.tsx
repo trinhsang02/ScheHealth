@@ -26,11 +26,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+
+      {/* Layout for all childrens in app folder */}
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <header> 
-          <NavMenu/>
+          {/* <NavMenu/> */}
         </header>
         {children}
       </body>

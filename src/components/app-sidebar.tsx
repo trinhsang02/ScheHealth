@@ -2,22 +2,24 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
   Frame,
-  GalleryVerticalEnd,
+  HomeIcon,
   Map,
   PieChart,
-  Settings2,
-  SquareTerminal,
+  Settings,
+  LogOut,
+  Hospital,
+  User,
+  CalendarCheck,
+  List,
+  Briefcase,
 } from "lucide-react"
 
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
+import { NavSystem } from "@/components/nav-System"
 import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+import { NavFunction } from "@/components/nav-function"
+import { NavAdmin } from "@/components/nav-admin"
+
 import {
   Sidebar,
   SidebarContent,
@@ -26,146 +28,116 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
+
 // This is sample data.
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "Bs. Nguyễn Văn A",
+    email: "Dr.ANguyen@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
-  teams: [
+  dashboard: [
+  {
+    name: "Dashboard",
+    url: "#",
+    icon: HomeIcon,
+  }
+],
+  // navMain: [
+  //   {
+  //     title: "Dashboard",
+  //     url: "#",
+  //     icon: HomeIcon,
+  //   },
+  //   {
+  //     title: "Models",
+  //     url: "#",
+  //     icon: Bot,
+  //     items: [
+  //       {
+  //         title: "Genesis",
+  //         url: "#",
+  //       },
+  //       {
+  //         title: "Explorer",
+  //         url: "#",
+  //       },
+  //       {
+  //         title: "Quantum",
+  //         url: "#",
+  //       },
+  //     ],
+  //   },
+  // ],
+  system: [
     {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      name: "Cài đặt",
+      url: "#",
+      icon: Settings,
     },
     {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
+      name: "Đăng xuất",
+      url: "#",
+      icon: LogOut,
     },
   ],
-  navMain: [
+
+  admin: [
     {
-      title: "Playground",
+      name: "Chuyên khoa",
       url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
+      icon: Hospital,
     },
     {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
+      name: "Bác sĩ",
       url: "#",
       icon: PieChart,
     },
     {
-      name: "Travel",
+      name: "Bệnh nhân",
       url: "#",
-      icon: Map,
+      icon: User,
+    },
+    {
+      name: "Dịch vụ",
+      url: "#",
+      icon: Briefcase,
     },
   ],
+  
+  coreFeatures: [
+    {
+      name: "Trang chủ",
+      url: "#",
+      icon: HomeIcon,
+    },
+    {
+      name: "Quản lý lịch hẹn",
+      url: "#",
+      icon: CalendarCheck,
+    },
+    {
+      name: "Quản lý ca khám",
+      url: "#",
+      icon: List,
+    },
+  ]
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [selectedItem, setSelectedItem] = React.useState<string | null>(null);
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        {/* Logo app */}
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavFunction projects={data.coreFeatures} selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
+        <NavAdmin projects={data.admin} selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
+        <NavSystem projects={data.system} selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
       </SidebarContent>
+
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>

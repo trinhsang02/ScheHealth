@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Eye, EyeOff } from 'lucide-react'
+import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -17,6 +18,11 @@ import { Label } from "@/components/ui/label"
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
+  const router = useRouter()
+
+  const handleButtonClick = () => {
+    router.push('/')
+  }
 
   return (
     <div className="flex h-screen w-full items-center justify-center p-4 sm:p-8">
@@ -42,17 +48,17 @@ export function LoginForm() {
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Mật khẩu</Label>
                 <Link
-                  href="#"
+                  href="/patient/forgot_password"
                   className="text-sm text-muted-foreground underline-offset-4 hover:underline"
                 >
                   Quên mật khẩu?
                 </Link>
               </div>
               <div className="relative">
-                <Input 
-                  id="password" 
-                  type={showPassword ? "text" : "password"} 
-                  required 
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  required
                 />
                 <Button
                   type="button"
@@ -70,7 +76,13 @@ export function LoginForm() {
                 </Button>
               </div>
             </div>
-            <Button variant="system" type="submit" className="w-full">
+
+            <Button
+              variant="system"
+              type="submit"
+              className="w-full"
+              onClick={handleButtonClick}
+            >
               Đăng nhập
             </Button>
             <Button variant="outline" className="w-full">
@@ -78,8 +90,8 @@ export function LoginForm() {
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
-           Bạn chưa có tài khoản?{" "}
-            <Link href="#" className="underline">
+            Bạn chưa có tài khoản?{" "}
+            <Link href="/patient/register" className="underline">
               Đăng ký ngay!
             </Link>
           </div>
