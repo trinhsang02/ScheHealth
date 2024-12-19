@@ -26,7 +26,7 @@ export default function MainView() {
           <Link href="/" className="text-sm">Trang chủ</Link>
           <Link href="/patient/schedule" className="text-sm">Lịch khám</Link>
           <Link href="/patient/profile" className="text-sm">Hồ sơ</Link>
-          <Link href="/login" className="text-sm">Đăng nhập</Link>
+          <Link href="/patient/login" className="text-sm">Đăng nhập</Link>
         </nav>
       </header>
 

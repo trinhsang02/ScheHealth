@@ -6,8 +6,7 @@ import Head from 'next/head';
 
 const MedicalHistory: React.FC = () => {
     return (
-        <>
-            
+        <>           
             <Head>
                 <title>Lịch Sử Khám Chữa Bệnh</title>
                 <meta charSet="UTF-8" />

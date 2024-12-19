@@ -105,7 +105,7 @@ export function RegisterForm() {
           </form>
           <div className="mt-4 text-center text-sm">
             Bạn đã có tài khoản?{" "}
-            <Link href="#" className="underline">
+            <Link href="/patient/login" className="underline">
               Đăng nhập ngay
             </Link>
           </div>
