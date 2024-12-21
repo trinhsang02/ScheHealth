@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation'
 
 interface Appointment {
   id: number;
@@ -108,6 +109,7 @@ const appointments: Appointment[] = [
 export default function AppointmentsPage() {
   const [currentPage] = useState(1);
   const itemsPerPage = 10;
+  const router = useRouter();
   
   const getStatusClass = (status: Appointment['status']) => {
     const baseClass = "px-3 py-1.5 rounded-full text-sm font-medium inline-block";
@@ -185,18 +187,26 @@ export default function AppointmentsPage() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <button
-                          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium ${
-                            appointment.status === 'waiting'
-                              ? 'bg-blue-500 text-white hover:bg-blue-600'
-                              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                          }`}
-                          disabled={appointment.status !== 'waiting'}
-                        >
-                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M18 8L22 12L18 16"/>
-                            <path d="M2 12H22"/>
-                          </svg>
-                          Gọi khám
+                            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium ${
+                                appointment.status === 'waiting'
+                                ? 'bg-blue-500 text-white hover:bg-blue-600'
+                                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            }`}
+                            disabled={appointment.status !== 'waiting'}
+                            onClick={() => {
+                                try {
+                                router.push(`/doctor/treatment?patientId=${appointment.id}`);
+                                } catch (error) {
+                                console.error('Navigation error:', error);
+                                // Có thể thêm thông báo lỗi cho người dùng ở đây
+                                }
+                            }}
+                            >
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M18 8L22 12L18 16"/>
+                                <path d="M2 12H22"/>
+                            </svg>
+                            Gọi khám
                         </button>
                         <select 
                           className="px-3 py-1.5 rounded-lg text-sm border border-gray-200 bg-white"
