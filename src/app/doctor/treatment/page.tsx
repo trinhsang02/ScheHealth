@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { ChevronLeft, HelpCircle } from 'lucide-react';
+import ClsModal from "../ClsModal";
 
 interface VitalSign {
   label: string;
@@ -12,7 +13,16 @@ interface VitalSign {
   step?: string;
 }
 
+interface Test {
+  id: string;
+  code: string;
+  name: string;
+  group: string;
+  price: number;
+}
+
 export default function MedicalExaminationPage() {
+  // State management
   const [vitalSigns, setVitalSigns] = useState<Record<string, string>>({
     temperature: '',
     bloodPressureSystolic: '',
@@ -26,7 +36,23 @@ export default function MedicalExaminationPage() {
   const [medicalHistory, setMedicalHistory] = useState('');
   const [clinicalExamination, setClinicalExamination] = useState('');
   const [diagnosis, setDiagnosis] = useState('');
+  const [examinationReason, setExaminationReason] = useState('');
 
+  // CLS Modal states
+  const [showClsModal, setShowClsModal] = useState(false);
+  const [selectedTests, setSelectedTests] = useState<Test[]>([]);
+
+  // Patient information
+  const patientInfo = {
+    name: 'Nguyễn Văn A',
+    gender: 'Nam',
+    dob: '01/01/1990',
+    phone: '0123456789',
+    identityCard: '001234567890',
+    address: 'Hà Nội'
+  };
+
+  // Vital Signs Configuration
   const vitalSignsConfig: VitalSign[] = [
     { 
       label: 'Nhiệt độ', 
@@ -66,11 +92,17 @@ export default function MedicalExaminationPage() {
     }
   ];
 
+  // Handlers
   const handleVitalSignChange = (key: string, value: string) => {
     setVitalSigns(prev => ({
       ...prev,
       [key]: value
     }));
+  };
+
+  const handleClsModalSave = (tests: Test[]) => {
+    setSelectedTests(tests);
+    setShowClsModal(false);
   };
 
   const renderVitalSignInput = (sign: VitalSign, index: number) => {
@@ -127,6 +159,23 @@ export default function MedicalExaminationPage() {
     );
   };
 
+  const handleSaveExamination = () => {
+    // Collect all examination data
+    const examinationData = {
+      patientInfo,
+      vitalSigns,
+      medicalHistory,
+      examinationReason,
+      clinicalExamination,
+      diagnosis,
+      selectedTests
+    };
+
+    // TODO: Implement actual save logic (e.g., API call)
+    console.log('Saving examination data:', examinationData);
+    alert('Đã lưu thông tin khám bệnh');
+  };
+
   return (
     <div className="container mx-auto px-4 py-6">
       {/* Header */}
@@ -145,12 +194,17 @@ export default function MedicalExaminationPage() {
       <div className="flex gap-4 mb-6">
         {[
           { label: 'Khám bệnh', active: true },
-          { label: 'Chuyển CLS', active: false },
+          { 
+            label: 'Chỉ đỉnh CLS', 
+            active: false, 
+            onClick: () => setShowClsModal(true) 
+          },
           { label: 'Đơn thuốc', active: false },
           { label: 'Hoàn thành', active: false, success: true }
         ].map((tab, index) => (
           <button 
             key={index} 
+            onClick={tab.onClick}
             className={`
               px-4 py-2 rounded-lg text-sm 
               ${tab.active ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}
@@ -168,21 +222,23 @@ export default function MedicalExaminationPage() {
           Thông tin bệnh nhân
         </h2>
         <div className="grid grid-cols-3 gap-4">
-          {[
-            { label: 'Họ tên', value: 'Nguyễn Văn A' },
-            { label: 'Giới tính', value: 'Nam' },
-            { label: 'Ngày sinh', value: '01/01/1990' },
-            { label: 'Số điện thoại', value: '0123456789' },
-            { label: 'CMND/CCCD', value: '001234567890' },
-            { label: 'Địa chỉ', value: 'Hà Nội' }
-          ].map((field, index) => (
+          {Object.entries(patientInfo).map(([key, value], index) => (
             <div key={index} className="mb-4">
               <label className="block text-sm text-gray-600 mb-2">
-                {field.label}
+                {
+                  {
+                    name: 'Họ tên',
+                    gender: 'Giới tính',
+                    dob: 'Ngày sinh',
+                    phone: 'Số điện thoại',
+                    identityCard: 'CMND/CCCD',
+                    address: 'Địa chỉ'
+                  }[key]
+                }
               </label>
               <input 
                 type="text" 
-                value={field.value} 
+                value={value} 
                 readOnly 
                 className="w-full px-3 py-2 bg-gray-100 rounded-lg text-gray-800"
               />
@@ -192,7 +248,7 @@ export default function MedicalExaminationPage() {
       </div>
 
       {/* Vital Signs Section */}
-      <div className="bg-white shadow-md rounded-lg p-6">
+      <div className="bg-white shadow-md rounded-lg p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">
           Chỉ số
         </h2>
@@ -211,6 +267,8 @@ export default function MedicalExaminationPage() {
             <textarea 
               rows={3} 
               placeholder="Nhập lý do khám" 
+              value={examinationReason}
+              onChange={(e) => setExaminationReason(e.target.value)}
               className="w-full px-3 py-2 bg-gray-100 rounded-lg"
             />
           </div>
@@ -262,11 +320,42 @@ export default function MedicalExaminationPage() {
             />
           </div>
 
-          <button className="bg-blue-600 text-white px-6 py-3 rounded-lg float-right hover:bg-blue-700 transition">
+          {/* Selected Tests Preview */}
+          {selectedTests.length > 0 && (
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="text-lg font-semibold mb-3">Các xét nghiệm đã chọn</h3>
+              <div className="flex flex-wrap gap-2">
+                {selectedTests.map(test => (
+                  <span 
+                    key={test.id} 
+                    className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm"
+                  >
+                    {test.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <button 
+            onClick={handleSaveExamination}
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg float-right hover:bg-blue-700 transition"
+          >
             Lưu thông tin
           </button>
         </div>
       </div>
+
+      {/* CLS Modal */}
+      {showClsModal && (
+        <ClsModal 
+          onClose={() => setShowClsModal(false)}
+          onSave={handleClsModalSave}
+          patientName={patientInfo.name}
+          patientDob={patientInfo.dob}
+          patientGender={patientInfo.gender}
+        />
+      )}
     </div>
   );
 }
