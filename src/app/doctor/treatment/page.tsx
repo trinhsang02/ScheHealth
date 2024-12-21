@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { ChevronLeft, HelpCircle } from 'lucide-react';
 import ClsModal from "../ClsModal";
+import PrescriptionModal from '../Prescription';
 
 interface VitalSign {
   label: string;
@@ -20,6 +21,17 @@ interface Test {
   group: string;
   price: number;
 }
+
+interface Medication {
+    id: string;
+    code: string;
+    name: string;
+    unit: string;
+    dosage: string;
+    frequency: string;
+    duration: string;
+    price: number;
+    }
 
 export default function MedicalExaminationPage() {
   // State management
@@ -42,6 +54,10 @@ export default function MedicalExaminationPage() {
   const [showClsModal, setShowClsModal] = useState(false);
   const [selectedTests, setSelectedTests] = useState<Test[]>([]);
 
+  // Prescription Modal states
+  const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
+  const [selectedMedications, setSelectedMedications] = useState<Medication[]>([]);
+  
   // Patient information
   const patientInfo = {
     name: 'Nguyễn Văn A',
@@ -103,6 +119,11 @@ export default function MedicalExaminationPage() {
   const handleClsModalSave = (tests: Test[]) => {
     setSelectedTests(tests);
     setShowClsModal(false);
+  };
+
+  const handlePrescriptionModalSave = (medications: Medication[]) => {
+    setSelectedMedications(medications);
+    setShowPrescriptionModal(false);
   };
 
   const renderVitalSignInput = (sign: VitalSign, index: number) => {
@@ -168,7 +189,8 @@ export default function MedicalExaminationPage() {
       examinationReason,
       clinicalExamination,
       diagnosis,
-      selectedTests
+      selectedTests,
+      selectedMedications
     };
 
     // TODO: Implement actual save logic (e.g., API call)
@@ -199,7 +221,11 @@ export default function MedicalExaminationPage() {
             active: false, 
             onClick: () => setShowClsModal(true) 
           },
-          { label: 'Đơn thuốc', active: false },
+          { 
+            label: 'Đơn thuốc', 
+            active: false, 
+            onClick: () => setShowPrescriptionModal(true) 
+          },
           { label: 'Hoàn thành', active: false, success: true }
         ].map((tab, index) => (
           <button 
@@ -356,6 +382,17 @@ export default function MedicalExaminationPage() {
           patientGender={patientInfo.gender}
         />
       )}
+
+      {/* Prescription Modal */}
+        {showPrescriptionModal && (
+        <PrescriptionModal 
+            onClose={() => setShowPrescriptionModal(false)}
+            onSave={handlePrescriptionModalSave}
+            patientName={patientInfo.name}
+            patientDob={patientInfo.dob}
+            patientGender={patientInfo.gender}
+        />
+        )}
     </div>
   );
 }
