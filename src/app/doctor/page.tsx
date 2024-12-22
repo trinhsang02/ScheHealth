@@ -9,6 +9,7 @@ import {
     SidebarTrigger,
 } from "@/components/ui/sidebar"
 import SpecialtiesPage from './specialtiesManager/page';
+import AppointmentsManagerPage from './appointment/page';
 
 export default function MainViewDoctor() {
     const router = useRouter();
@@ -24,6 +25,7 @@ export default function MainViewDoctor() {
                 <SidebarProvider>
                     <AppSidebar />
                     <SidebarInset>
+                        <AppointmentsManagerPage />
                         <SpecialtiesPage />
                     </SidebarInset>
                 </SidebarProvider>
