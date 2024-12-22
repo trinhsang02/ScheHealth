@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation'
 import hospitalImage from '../../assets/hospital-image.png'
 
-export default function MainView() {
+export default function MainViewPatient() {
   const router = useRouter();
 
   return (
@@ -17,7 +17,7 @@ export default function MainView() {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               {/* Thêm path cho logo nếu cần */}
             </svg>
-            <h1 className="text-lg font-semibold">Bệnh viện Quân y 175</h1>
+            <h1 className="text-lg font-semibold">ScheHealth</h1>
           </div>
         </div>
 
@@ -61,7 +61,7 @@ export default function MainView() {
 
       {/* Footer */}
       <footer className="mt-auto py-4 text-center text-sm text-gray-500">
-        © 2023 Bệnh viện Quân y 175
+        © 2024 ScheHealth
       </footer>
     </div>
   );

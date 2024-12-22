@@ -85,7 +85,7 @@ const data = {
   admin: [
     {
       name: "Chuyên khoa",
-      url: "#",
+      url: "/doctor/specialtiesManager",
       icon: Hospital,
     },
     {

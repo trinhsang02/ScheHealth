@@ -2,6 +2,12 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { NavMenu } from "@/components/NavMenu/NavMenu";
+import { AppSidebar } from "@/components/app-sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -23,6 +29,7 @@ export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
+  role: string;
 }>) {
   return (
     <html lang="en">
@@ -31,10 +38,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <header> 
-          {/* <NavMenu/> */}
+        <header>
+          
         </header>
-        {children}
+        <main className="flex-1 overflow-auto">{children}</main>
       </body>
     </html>
   );
