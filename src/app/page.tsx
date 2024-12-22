@@ -1,27 +1,67 @@
 'use client'
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+
+import { AppSidebar } from "@/components/app-sidebar";
+import { NavMenu } from "@/components/NavMenu/NavMenu";
+import { Button } from "@/components/ui/button";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { LoginForm } from "./auth/login";
+import { RegisterForm } from "./auth/register";
 import { useRouter } from 'next/navigation'
-import hospitalImage from '../assets/hospital-image.png'
-import MainViewPatient from './patient/page';
-import MainViewDoctor from './doctor/page';
 
-
-export default function MainView() {
+export default function Page() {
   const router = useRouter();
+
   return (
-    <div className="relative flex min-h-screen flex-col bg-[#F4FDF6]">
-      <header className="flex items-center justify-between px-4 py-3">
-      </header>
-
-      <MainViewPatient />
-      {/* <MainViewDoctor /> */}
-
-      {/* Footer */}
-      <footer className="mt-auto py-4 text-center text-sm text-gray-500">
-      </footer>
-    </div>
+    <SidebarProvider>
+      {/* <AppSidebar /> */}
+      {/* <LoginForm /> */}
+      <RegisterForm />
+      <button onClick={() => router.push('/patient')}>
+      Đến Trang Đăng Nhập
+      </button>
+      <button onClick={() => router.push('/doctor')}>
+      Đến Trang bác sĩ
+      </button>
+      {/* <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem className="hidden md:block">
+                <BreadcrumbLink href="#">
+                  Building Your Application
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </header>
+        <div className="flex flex-1 flex-col gap-4 p-4">
+          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+            <div className="aspect-video rounded-xl bg-muted/50" />
+            <div className="aspect-video rounded-xl bg-muted/50" />
+            <div className="aspect-video rounded-xl bg-muted/50" />
+          </div>
+          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
+        </div>
+      </SidebarInset> */}
+    </SidebarProvider> 
   );
 }
-

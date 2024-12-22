@@ -113,7 +113,7 @@ const data = {
     },
     {
       name: "Quản lý lịch hẹn",
-      url: "#",
+      url: "/doctor/Patientlist",
       icon: CalendarCheck,
     },
     {
