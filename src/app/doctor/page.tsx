@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sidebar"
 import SpecialtiesPage from './specialtiesManager/page';
 import AppointmentsManagerPage from './appointment/page';
+import MedicinesPage from './medicine/page';
 
 export default function MainViewDoctor() {
     const router = useRouter();
@@ -27,6 +28,7 @@ export default function MainViewDoctor() {
                     <SidebarInset>
                         <AppointmentsManagerPage />
                         <SpecialtiesPage />
+                        <MedicinesPage />
                     </SidebarInset>
                 </SidebarProvider>
             </main>
