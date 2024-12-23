@@ -72,7 +72,7 @@ const data = {
   system: [
     {
       name: "Cài đặt",
-      url: "#",
+      url: "/doctor/setting",
       icon: Settings,
     },
     {
