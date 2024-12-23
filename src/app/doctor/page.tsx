@@ -21,12 +21,6 @@ export default function MainViewDoctor() {
 
             {/* Main Content */}
             <main>
-                <SidebarProvider>
-                    <AppSidebar />
-                    <SidebarInset>
-                        <SpecialtiesPage />
-                    </SidebarInset>
-                </SidebarProvider>
             </main>
 
             {/* Footer */}
