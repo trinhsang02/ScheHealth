@@ -17,9 +17,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { MoreVertical, Plus, Search } from "lucide-react";
+import { AddSpecialtyModal } from "../AddSpecialtyModal";
+import React from "react";
 
 // Sample data - replace with actual data from your backend
-const specialties = [
+const initialSpecialties  = [
   { id: 1, name: "Da liễu", count: 12 },
   { id: 2, name: "Tim mạch", count: 12 },
   { id: 3, name: "Nội", count: 12 },
@@ -30,13 +32,24 @@ const specialties = [
 ];
 
 const SpecialtiesPage = () => {
+
+  const [specialties, setSpecialties] = React.useState(initialSpecialties);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+  const handleAddSpecialty = (data: { name: string; count: number }) => {
+    setSpecialties((prev) => [
+      ...prev,
+      { id: prev.length + 1, name: data.name, count: data.count },
+    ]);
+  };
+
   return (
     <div className="flex flex-col">
       {/* Header Section */}
       <div className="border-b bg-white">
         <div className="flex h-16 items-center justify-between px-4">
           <h1 className="text-lg font-semibold">Danh sách chuyên khoa</h1>
-          <Button size="sm" variant="system">
+          <Button size="sm" variant="system" onClick={() => setIsModalOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
             Thêm mới
           </Button>
@@ -88,7 +101,9 @@ const SpecialtiesPage = () => {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
+                          <DropdownMenuItem>
+                            Chỉnh sửa
+                          </DropdownMenuItem>
                           <DropdownMenuItem className="text-destructive">
                             Xóa
                           </DropdownMenuItem>
@@ -102,6 +117,12 @@ const SpecialtiesPage = () => {
           </Table>
         </div>
       </div>
+      {/* Modal for Adding Specialty */}
+      <AddSpecialtyModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleAddSpecialty}
+      />
     </div>
   );
 }
