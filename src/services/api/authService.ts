@@ -6,6 +6,7 @@ export const login = async (loginRequest: LoginRequest): Promise<LoginResponse> 
     const response = await apiClient.post<LoginResponse>('/login', loginRequest);
     return response.data;
   } catch (error: any) {
+    console.log('Axios Error:', error);
     console.error('Login failed:', error?.response?.data?.message || error.message);
     throw new Error(error?.response?.data?.message || 'Login failed');
   }

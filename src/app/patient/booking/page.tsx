@@ -16,14 +16,9 @@ const AppointmentPage = () => {
     }
 
     try {
-      const response = await axios.post('/api/booking', {
-        /* dữ liệu đặt lịch */
-      });
-
-      // Xử lý dữ liệu trả về
-      console.log(response.data);
+      router.push('/patient/appointment');
     } catch (error) {
-      console.error('Đặt lịch không thành công:', error);
+      console.error('Đặt lịch thất bại', error);
     }
   };
 

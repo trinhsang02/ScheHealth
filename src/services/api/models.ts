@@ -1,6 +1,7 @@
 export interface LoginRequest {
     email: string;
     password: string;
+    login_type: string;
   }
   
   export interface LoginResponse {
@@ -23,4 +24,12 @@ export interface LoginRequest {
   export interface PasswordResetRequest {
     email: string;
     role: string;
+  }
+
+  export interface appointmentData {
+    id: string;
+    patientId: string;
+    doctorId: string;
+    date: Date;
+    status: string;
   }

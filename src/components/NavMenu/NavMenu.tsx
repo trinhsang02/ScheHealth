@@ -19,7 +19,7 @@ export function NavMenu() {
     <header className="w-full border-b bg-white">
       <div className="flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
-          <span className="text-xl font-bold">ScheHealth</span>
+          <span className="text-xl font-bold p-5">ScheHealth</span>
         </Link>
         <nav className="flex items-center space-x-6 justify-end p-5">
           <Link href="/" className="text-sm font-medium transition-colors hover:text-primary">
@@ -32,7 +32,7 @@ export function NavMenu() {
               </MenubarTrigger>
               <MenubarContent>
                 <MenubarItem>
-                  <Link href="/lich-kham/dat-lich">Đặt lịch khám</Link>
+                  <Link href="/patient/appointment">Đặt lịch khám</Link>
                 </MenubarItem>
                 <MenubarItem>
                   <Link href="/lich-kham/lich-su">Lịch sử khám</Link>

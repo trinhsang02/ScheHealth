@@ -1,27 +1,33 @@
 'use client'
 
 import React, { useState } from 'react';
+import { Calendar } from "@/components/ui/calendar"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { format } from "date-fns"
+import { cn } from "@/lib/utils"
+import { CalendarIcon } from 'lucide-react'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 const AppointmentForm = () => {
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [date, setDate] = React.useState<Date | undefined>(new Date())
 
-  const dates = [
-    { day: 'Th 4', date: '27/11' },
-    { day: 'Th 5', date: '28/11' },
-    { day: 'Th 6', date: '29/11' },
-    { day: 'Th 7', date: '30/11' },
-  ];
-
-  const times = ['14:00', '15:00', '16:00', '17:00'];
+  const handleDateSelect = (selectedDate: Date | undefined) => {
+    const today = new Date();
+    if (selectedDate && selectedDate > today) {
+      setDate(selectedDate);
+    } else {
+      alert(`Vui lòng chọn sau ngày ${today.toLocaleDateString()}.`);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 p-4">
       <div className="max-w-2xl mx-auto bg-white rounded-xl p-6">
-        <div className="flex items-center gap-2 text-gray-500 text-sm mb-4">
-          <span>Đến với</span>
-          <span className="font-medium">Đặt khám</span>
-        </div>
 
         <h1 className="text-xl font-bold mb-6">Chọn lịch khám</h1>
 
@@ -74,43 +80,44 @@ const AppointmentForm = () => {
           </div>
         </div>
 
-        {/* Chọn ngày giờ khám */}
+
+        {/* Chọn ngày khám */}
         <div>
-          <h2 className="text-lg font-medium mb-4">Chọn ngày giờ khám</h2>
-          <p className="text-sm text-gray-500 mb-4">Vui lòng chọn ngày và giờ phù hợp với bạn</p>
-
-          <div className="grid grid-cols-4 gap-3 mb-6">
-            {dates.map((date) => (
-              <div
-                key={date.date}
-                className={`text-center p-3 border rounded-lg cursor-pointer ${selectedDate === date.date ? 'bg-blue-50 border-blue-500' : ''}`}
-                onClick={() => setSelectedDate(date.date)}
-              >
-                <div className="text-sm">{date.day}</div>
-                <div className="font-medium">{date.date}</div>
-              </div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-4 gap-3">
-            {times.map((time) => (
-              <button
-                key={time}
-                className={`p-3 text-center border rounded-lg cursor-pointer ${selectedTime === time ? 'bg-blue-50 border-blue-500' : ''}`}
-                onClick={() => setSelectedTime(time)}
-              >
-                {time}
-              </button>
-            ))}
-          </div>
+          <h2 className="text-lg font-medium mb-3">Chọn ngày giờ khám</h2>
         </div>
-
-        <button
-          className={`w-full bg-blue-600 text-white rounded-lg p-3 mt-6 ${!selectedDate || !selectedTime ? 'opacity-50 cursor-not-allowed' : ''}`}
-          disabled={!selectedDate || !selectedTime}
-        >
-          Xác nhận lịch hẹn
-        </button>
+        <div className="space-y-2">
+          <Label htmlFor="dob">Vui lòng chọn ngày phù hợp với bạn</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                id="dob"
+                variant={"outline"}
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !date && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date ? format(date, "dd/MM/yyyy") : "Chọn ngày"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={handleDateSelect}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+          <Button
+            className="w-full hover:blue-60"
+            disabled={!date}
+            variant="system"
+          >
+            Đặt lịch ngay
+          </Button>
+        </div>
       </div>
     </div>
   );

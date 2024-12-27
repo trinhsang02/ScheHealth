@@ -24,6 +24,8 @@ export function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [loginType, setLoginType] = useState('patient'); // Thêm state cho login_type
+
 
   const router = useRouter()
 
@@ -43,7 +45,7 @@ export function LoginForm() {
 
     setIsLoading(true);
     try {
-      const loginRequest: LoginRequest = { email, password };
+      const loginRequest: LoginRequest = { email, password, login_type: loginType };
       const response = await login(loginRequest);
 
       if (response.success) {
