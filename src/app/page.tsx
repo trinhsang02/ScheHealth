@@ -26,10 +26,8 @@ export default function Page() {
 
   return (
     <SidebarProvider>
-      {/* <AppSidebar /> */}
-      {/* <LoginForm /> */}
-      <RegisterForm />
-      <button onClick={() => router.push('/patient')}>
+      <LoginForm />
+      <button onClick={() => router.push('/patient/homepage')}>
       Đến Trang Đăng Nhập
       </button>
       <button onClick={() => router.push('/doctor')}>

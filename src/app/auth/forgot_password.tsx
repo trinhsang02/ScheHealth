@@ -30,9 +30,9 @@ export default function ForgotPasswordForm() {
     <div className="flex h-screen w-full items-center justify-center p-4 sm:p-8">
       <Card className="mx-auto w-full max-w-lg">
         <CardHeader>
-          <CardTitle className="text-2xl">Forgot Password</CardTitle>
+          <CardTitle className="text-2xl">Quên mật khẩu</CardTitle>
           <CardDescription>
-            Enter your email address and we'll send you a link to reset your password.
+            Xác nhận Email chúng tôi sẽ gửi lại mã xác nhận cho bạn.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -51,20 +51,20 @@ export default function ForgotPasswordForm() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="m@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
-              <Button type="submit" className="w-full">
+              <Button variant="system" type="submit" className="w-full">
                 Send Reset Link
               </Button>
             </form>
           )}
           <div className="mt-4 text-center text-sm">
             Remember your password?{" "}
-            <Link href="/login" className="text-primary underline-offset-4 hover:underline">
+            <Link href="/patient/login" className="text-primary underline-offset-4 hover:underline">
               Back to Login
             </Link>
           </div>

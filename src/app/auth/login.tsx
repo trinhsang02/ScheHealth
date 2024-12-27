@@ -15,14 +15,66 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { login } from "../../services/api/authService"
+import { LoginRequest } from "@/services/api/models"
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+
   const router = useRouter()
 
-  const handleButtonClick = () => {
-    router.push('/')
-  }
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    // Validation
+    if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      setError('Email không hợp lệ');
+      return;
+    }
+    if (password.length < 6) {
+      setError('Mật khẩu phải có ít nhất 6 ký tự');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const loginRequest: LoginRequest = { email, password };
+      const response = await login(loginRequest);
+
+      if (response.success) {
+        // localStorage.setItem('token', response.data?.access_token || '');
+        // const role = response.data.role;
+
+        // // Navigate based on user role
+        // switch (role) {
+        //   case 'admin':
+        //     router.push('/admin/dashboard');
+        //     break;
+        //   case 'doctor':
+        //     router.push('/doctor/homepage');
+        //     break;
+        //   case 'patient':
+        //     router.push('/patient/homepage');
+        //     break;
+        //   default:
+        //     setError('Vai trò không xác định');
+        // }
+        router.push('/patient/homepage');
+      } else {
+        setError(response.message || 'Đăng nhập thất bại');
+      }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      setError(error.message || 'Lỗi hệ thống, vui lòng thử lại sau');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex h-screen w-full items-center justify-center p-4 sm:p-8">
@@ -34,12 +86,14 @@ export function LoginForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="grid gap-6">
+          <form className="grid gap-6" onSubmit={handleLogin}>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
+                onChange={(e) => setEmail(e.target.value)}
+                value={email}
                 placeholder="m@example.com"
                 required
               />
@@ -48,7 +102,7 @@ export function LoginForm() {
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Mật khẩu</Label>
                 <Link
-                  href="/patient/forgot_password"
+                  href="/patient/forgotPassword"
                   className="text-sm text-muted-foreground underline-offset-4 hover:underline"
                 >
                   Quên mật khẩu?
@@ -59,6 +113,8 @@ export function LoginForm() {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <Button
                   type="button"
@@ -77,13 +133,15 @@ export function LoginForm() {
               </div>
             </div>
 
+            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
             <Button
               variant="system"
               type="submit"
               className="w-full"
-              onClick={handleButtonClick}
+              disabled={isLoading}
             >
-              Đăng nhập
+              {isLoading ? 'Đang xử lý...' : 'Đăng nhập'}
             </Button>
             <Button variant="outline" className="w-full">
               Đăng nhập với Google
@@ -99,5 +157,4 @@ export function LoginForm() {
       </Card>
     </div>
   )
-}
-
+};

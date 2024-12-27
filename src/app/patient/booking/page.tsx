@@ -3,24 +3,32 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'
+import axios from 'axios';
 
 const AppointmentPage = () => {
-    const router = useRouter();
-  
+  const router = useRouter();
+  const isLoggedIn = true;
+
+  const handleBooking = async () => {
+    if (!isLoggedIn) {
+      alert("Bạn cần đăng nhập để đặt lịch.");
+      return;
+    }
+
+    try {
+      const response = await axios.post('/api/booking', {
+        /* dữ liệu đặt lịch */
+      });
+
+      // Xử lý dữ liệu trả về
+      console.log(response.data);
+    } catch (error) {
+      console.error('Đặt lịch không thành công:', error);
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 font-sans">
-      {/* Header */}
-      <header className="flex items-center justify-between border-b border-gray-300 px-10 py-3">
-        <div className="flex items-center gap-4 text-[#0e141b]">
-          <h2 className="text-lg font-bold">ScheHealth</h2>
-        </div>
-        <nav className="flex gap-8">
-          <Link href="/" className="text-sm">Trang chủ</Link>
-          <Link href="/patient/schedule" className="text-sm">Lịch khám</Link>
-          <Link href="/patient/profile" className="text-sm">Hồ sơ</Link>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded">Đăng nhập</button>
-        </nav>
-      </header>
 
       {/* Main Content */}
       <main className="flex flex-1 justify-center py-5">
@@ -41,7 +49,7 @@ const AppointmentPage = () => {
                 <h2 className="text-lg font-bold">Tiêu chuẩn</h2>
                 <p className="text-gray-500">30 phút • 100.000 VNĐ</p>
               </div>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={() => router.push('/patient/appointment')}>Đặt lịch</button>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={handleBooking}>Đặt lịch</button>
             </div>
 
             {/* VIP Service */}
