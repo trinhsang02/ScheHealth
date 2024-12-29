@@ -33,3 +33,10 @@ export interface LoginRequest {
     date: Date;
     status: string;
   }
+
+  export interface specialtyData{
+    id: string;
+    name: string;
+    description: string;
+    image: string;
+  }

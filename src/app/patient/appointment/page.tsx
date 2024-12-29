@@ -1,17 +1,28 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar } from "@/components/ui/calendar"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { CalendarIcon } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+
+import { fetchSpecialties } from '../../../services/api/specialtyService'; 
+import { specialtyData } from '../../../services/api/models';
 
 const AppointmentForm = () => {
   const [date, setDate] = React.useState<Date | undefined>(new Date())
@@ -25,6 +36,20 @@ const AppointmentForm = () => {
     }
   }
 
+  const [specialties, setSpecialties] = useState([]);
+  useEffect(() => {
+        const getSpecialties = async () => {
+            try {
+                const data = await fetchSpecialties();
+                setSpecialties(data); 
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        getSpecialties();
+    }, []);
+
   return (
     <div className="min-h-screen bg-slate-50 p-4">
       <div className="max-w-2xl mx-auto bg-white rounded-xl p-6">
@@ -36,7 +61,7 @@ const AppointmentForm = () => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Họ</label>
-              <input
+              <Input
                 type="text"
                 className="w-full p-3 rounded-lg bg-gray-100"
                 placeholder="Jane"
@@ -44,7 +69,7 @@ const AppointmentForm = () => {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Tên</label>
-              <input
+              <Input
                 type="text"
                 className="w-full p-3 rounded-lg bg-gray-100"
                 placeholder="Doe"
@@ -54,7 +79,7 @@ const AppointmentForm = () => {
 
           <div>
             <label className="block text-sm font-medium mb-1">Email</label>
-            <input
+            <Input
               type="email"
               className="w-full p-3 rounded-lg bg-gray-100"
               placeholder="jane.doe@example.com"
@@ -63,7 +88,7 @@ const AppointmentForm = () => {
 
           <div>
             <label className="block text-sm font-medium mb-1">Số điện thoại</label>
-            <input
+            <Input
               type="tel"
               className="w-full p-3 rounded-lg bg-gray-100"
               placeholder="(+84) 456-7890"
@@ -72,23 +97,42 @@ const AppointmentForm = () => {
 
           <div>
             <label className="block text-sm font-medium mb-1">Địa chỉ</label>
-            <input
+            <Input
               type="text"
               className="w-full p-3 rounded-lg bg-gray-100"
               placeholder="Địa chỉ của bạn"
             />
           </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Chọn chuyên khoa</label>
+            <Select> 
+              <SelectTrigger className="w-full p-3 rounded-lg bg-gray-100">
+                <SelectValue placeholder="Chọn chuyên khoa" />
+              </SelectTrigger>
+              <SelectContent>
+                {/* <SelectItem value="general">Đa khoa</SelectItem>
+                <SelectItem value="cardiology">Tim mạch</SelectItem>
+                <SelectItem value="neurology">Thần kinh</SelectItem>
+                <SelectItem value="orthopedics">Chỉnh hình</SelectItem>
+                <SelectItem value="dermatology">Da liễu</SelectItem>
+                <SelectItem value="pediatrics">Nhi khoa</SelectItem> */}
+                {specialties.map((specialty : specialtyData) => (
+                  <SelectItem key={specialty.id} value={specialty.name}>
+                    {specialty.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
 
         {/* Chọn ngày khám */}
-        <div>
-          <h2 className="text-lg font-medium mb-3">Chọn ngày giờ khám</h2>
-        </div>
         <div className="space-y-2">
           <Label htmlFor="dob">Vui lòng chọn ngày phù hợp với bạn</Label>
           <Popover>
-            <PopoverTrigger asChild>
+            <PopoverTrigger asChild  className="w-full p-3 rounded-lg bg-gray-100">
               <Button
                 id="dob"
                 variant={"outline"}
