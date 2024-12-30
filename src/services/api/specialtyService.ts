@@ -3,9 +3,10 @@ import { specialtyData } from './models';
 
 export const fetchSpecialties = async () => {
     try {
-        const response = await apiClient.get('/specialty'); 
+        const response = await apiClient.get('/specialty/all'); 
         return response.data; 
     } catch (error) {
-        throw new Error('Failed to fetch specialties');
+        console.error('Error fetching specialties:', error);
+        throw error;
     }
 };

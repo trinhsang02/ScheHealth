@@ -48,24 +48,11 @@ export function LoginForm() {
       const loginRequest: LoginRequest = { email, password, login_type: loginType };
       const response = await login(loginRequest);
 
-      if (response.success) {
-        // localStorage.setItem('token', response.data?.access_token || '');
-        // const role = response.data.role;
-
-        // // Navigate based on user role
-        // switch (role) {
-        //   case 'admin':
-        //     router.push('/admin/dashboard');
-        //     break;
-        //   case 'doctor':
-        //     router.push('/doctor/homepage');
-        //     break;
-        //   case 'patient':
-        //     router.push('/patient/homepage');
-        //     break;
-        //   default:
-        //     setError('Vai trò không xác định');
-        // }
+      if (response.success && response.data) {
+        // Save token to sessionStorage
+        sessionStorage.setItem('accessToken', response.data.access_token);
+        sessionStorage.setItem('loginType', loginType);
+        sessionStorage.setItem('email', email);
         router.push('/patient/homepage');
       } else {
         setError(response.message || 'Đăng nhập thất bại');

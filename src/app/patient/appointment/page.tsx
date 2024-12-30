@@ -34,13 +34,14 @@ const AppointmentForm = () => {
     } else {
       alert(`Vui lòng chọn sau ngày ${today.toLocaleDateString()}.`);
     }
-  }
+  };
 
   const [specialties, setSpecialties] = useState([]);
   useEffect(() => {
         const getSpecialties = async () => {
             try {
                 const data = await fetchSpecialties();
+                //console.log(data);
                 setSpecialties(data); 
             } catch (error) {
                 console.error(error);
