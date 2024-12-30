@@ -1,5 +1,4 @@
 'use client'
-
 import React, { useEffect, useState } from 'react';
 import { Calendar } from "@/components/ui/calendar"
 import { Button } from "@/components/ui/button"
@@ -8,6 +7,7 @@ import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { CalendarIcon } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { useRouter } from 'next/navigation'
 import {
   Select,
   SelectContent,
@@ -21,11 +21,28 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import { fetchSpecialties } from '../../../services/api/specialtyService'; 
+import { fetchSpecialties } from '../../../services/api/specialtyService';
 import { specialtyData } from '../../../services/api/models';
+import AppointmentTicketModal from '../AppointmentTicketModal';
 
 const AppointmentForm = () => {
-  const [date, setDate] = React.useState<Date | undefined>(new Date())
+  const router = useRouter();
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [showModal, setShowModal] = useState(false);
+  const [appointmentNumber, setAppointmentNumber] = useState('');
+  const [specialties, setSpecialties] = useState([]);
+
+  useEffect(() => {
+    const getSpecialties = async () => {
+      try {
+        const data = await fetchSpecialties();
+        setSpecialties(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getSpecialties();
+  }, []);
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
     const today = new Date();
@@ -36,28 +53,24 @@ const AppointmentForm = () => {
     }
   };
 
-  const [specialties, setSpecialties] = useState([]);
-  useEffect(() => {
-        const getSpecialties = async () => {
-            try {
-                const data = await fetchSpecialties();
-                //console.log(data);
-                setSpecialties(data); 
-            } catch (error) {
-                console.error(error);
-            }
-        };
+  const handleSubmit = () => {
+    const randomNumber = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    setAppointmentNumber(`B${randomNumber}`);
+    setShowModal(true);
+  }
 
-        getSpecialties();
-    }, []);
+  const handleModalChange = (open: boolean) => {
+    setShowModal(open);
+    if (!open) {
+      router.push('/patient/homepage');
+    }
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 p-4">
       <div className="max-w-2xl mx-auto bg-white rounded-xl p-6">
-
         <h1 className="text-xl font-bold mb-6">Chọn lịch khám</h1>
 
-        {/* Form Thông tin cá nhân */}
         <div className="space-y-4 mb-6">
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -107,18 +120,12 @@ const AppointmentForm = () => {
 
           <div>
             <label className="block text-sm font-medium mb-1">Chọn chuyên khoa</label>
-            <Select> 
+            <Select>
               <SelectTrigger className="w-full p-3 rounded-lg bg-gray-100">
                 <SelectValue placeholder="Chọn chuyên khoa" />
               </SelectTrigger>
               <SelectContent>
-                {/* <SelectItem value="general">Đa khoa</SelectItem>
-                <SelectItem value="cardiology">Tim mạch</SelectItem>
-                <SelectItem value="neurology">Thần kinh</SelectItem>
-                <SelectItem value="orthopedics">Chỉnh hình</SelectItem>
-                <SelectItem value="dermatology">Da liễu</SelectItem>
-                <SelectItem value="pediatrics">Nhi khoa</SelectItem> */}
-                {specialties.map((specialty : specialtyData) => (
+                {specialties.map((specialty: specialtyData) => (
                   <SelectItem key={specialty.id} value={specialty.name}>
                     {specialty.name}
                   </SelectItem>
@@ -128,12 +135,10 @@ const AppointmentForm = () => {
           </div>
         </div>
 
-
-        {/* Chọn ngày khám */}
         <div className="space-y-2">
           <Label htmlFor="dob">Vui lòng chọn ngày phù hợp với bạn</Label>
           <Popover>
-            <PopoverTrigger asChild  className="w-full p-3 rounded-lg bg-gray-100">
+            <PopoverTrigger asChild className="w-full p-3 rounded-lg bg-gray-100">
               <Button
                 id="dob"
                 variant={"outline"}
@@ -159,10 +164,17 @@ const AppointmentForm = () => {
             className="w-full hover:blue-60"
             disabled={!date}
             variant="system"
+            onClick={handleSubmit}
           >
             Đặt lịch ngay
           </Button>
         </div>
+
+        <AppointmentTicketModal
+          open={showModal}
+          onOpenChange={handleModalChange}
+          appointmentNumber={appointmentNumber}
+        />
       </div>
     </div>
   );
