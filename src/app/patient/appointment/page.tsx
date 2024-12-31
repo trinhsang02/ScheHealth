@@ -8,30 +8,30 @@ import { cn } from "@/lib/utils"
 import { CalendarIcon } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { useRouter } from 'next/navigation'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select"
+import { Popover, PopoverContent, PopoverTrigger, } from "@/components/ui/popover"
 
 import { fetchSpecialties } from '../../../services/api/specialtyService';
 import { specialtyData } from '../../../services/api/models';
+import { createAppointment } from '../../../services/api/appointmentService'
 import AppointmentTicketModal from '../AppointmentTicketModal';
+import { jwtDecode } from "jwt-decode";
+import { imageOptimizer } from 'next/dist/server/image-optimizer';
 
 const AppointmentForm = () => {
   const router = useRouter();
-  const [date, setDate] = useState<Date | undefined>(new Date());
   const [showModal, setShowModal] = useState(false);
   const [appointmentNumber, setAppointmentNumber] = useState('');
   const [specialties, setSpecialties] = useState([]);
+  const [selectedSpecialty, setSelectedSpecialty] = useState('');
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [patientName, setPatientName] = useState('');
+  const [patientBirthday, setPatientBirthday] = useState('');
+  const [patientPhone, setPatientPhone] = useState('');
+  const [patientReason, setPatientReason] = useState('');
 
+
+  // Get data speciality
   useEffect(() => {
     const getSpecialties = async () => {
       try {
@@ -53,11 +53,45 @@ const AppointmentForm = () => {
     }
   };
 
-  const handleSubmit = () => {
-    const randomNumber = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    setAppointmentNumber(`B${randomNumber}`);
-    setShowModal(true);
-  }
+  const handleSubmit = async () => {
+    const token = sessionStorage.getItem('accessToken');
+    if (!token || !date || !selectedSpecialty) return;
+
+    const decoded = jwtDecode(token) as {
+      sub: string;
+    };
+
+    try {
+      const appointmentData = {
+        patient_id: Number(decoded.sub),
+        patient_name: patientName,
+        patient_birthday: patientBirthday,
+        patient_phone: patientPhone,
+        patient_reason: patientReason,
+        speciality_id: Number(selectedSpecialty),
+        date: format(date, 'yyyy-MM-dd')
+      };
+
+      const response = await createAppointment(appointmentData);
+
+      if (response.success) {
+        // Create Appointment successful
+        setAppointmentNumber(response.appointmentNumber);
+        setShowModal(true);
+      } else {
+        // API call back error
+        alert(`Không thể tạo lịch hẹn: ${response.message}`);
+      }
+    } catch (error: any) {
+      // Handle error network or others
+      if (error.response && error.response.data && error.response.data.message) {
+        alert(`Lỗi: ${error.response.data.message}`);
+      } else {
+        alert(`Đã xảy ra lỗi không xác định: ${error.message}`);
+      }
+    }
+    setShowModal(false);
+  };
 
   const handleModalChange = (open: boolean) => {
     setShowModal(open);
@@ -65,6 +99,21 @@ const AppointmentForm = () => {
       router.push('/patient/homepage');
     }
   }
+
+  // const token = sessionStorage.getItem('accessToken');
+  // if (token) {
+  //   const decoded = jwtDecode(token) as {
+  //     sub: string;
+  //     name: string;
+  //     role: string;
+  //     exp: number;
+  //   };
+
+  //   const id = decoded.sub;
+  //   const role = decoded.role;
+  //   const name = decoded.name;
+  // }
+
 
   return (
     <div className="min-h-screen bg-slate-50 p-4">
@@ -74,19 +123,20 @@ const AppointmentForm = () => {
         <div className="space-y-4 mb-6">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Họ</label>
-              <Input
+              <label className="block text-sm font-medium mb-1">Họ và Tên</label>
+              {/* <Input
                 type="text"
                 className="w-full p-3 rounded-lg bg-gray-100"
                 placeholder="Jane"
-              />
-            </div>
+              /> */}
+              {/* </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Tên</label>
+              <label className="block text-sm font-medium mb-1">Tên</label> */}
               <Input
                 type="text"
                 className="w-full p-3 rounded-lg bg-gray-100"
                 placeholder="Doe"
+                onChange={(e) => setPatientName(e.target.value)}
               />
             </div>
           </div>
@@ -106,6 +156,7 @@ const AppointmentForm = () => {
               type="tel"
               className="w-full p-3 rounded-lg bg-gray-100"
               placeholder="(+84) 456-7890"
+              onChange={(e) => setPatientPhone(e.target.value)}
             />
           </div>
 
@@ -120,7 +171,7 @@ const AppointmentForm = () => {
 
           <div>
             <label className="block text-sm font-medium mb-1">Chọn chuyên khoa</label>
-            <Select>
+            <Select onValueChange={setSelectedSpecialty}>
               <SelectTrigger className="w-full p-3 rounded-lg bg-gray-100">
                 <SelectValue placeholder="Chọn chuyên khoa" />
               </SelectTrigger>

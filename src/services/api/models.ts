@@ -27,11 +27,13 @@ export interface LoginRequest {
   }
 
   export interface appointmentData {
-    id: string;
-    patientId: string;
-    doctorId: string;
-    date: Date;
-    status: string;
+    patient_id: number;
+    patient_name: string;
+    patient_birthday: string;
+    patient_phone: string;
+    patient_reason: string;
+    speciality_id: number;
+    date: string;
   }
 
   export interface specialtyData{
