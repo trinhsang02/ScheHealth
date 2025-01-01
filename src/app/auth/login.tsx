@@ -24,8 +24,7 @@ export function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [loginType, setLoginType] = useState('patient'); // Thêm state cho login_type
-
+  const [loginType, setLoginType] = useState('patient'); 
 
   const router = useRouter()
 
@@ -53,7 +52,9 @@ export function LoginForm() {
         sessionStorage.setItem('accessToken', response.data.access_token);
         sessionStorage.setItem('loginType', loginType);
         sessionStorage.setItem('email', email);
-        router.push('/patient/homepage');
+
+        if (loginType == 'patient')
+          router.push('/patient/homepage');
       } else {
         setError(response.message || 'Đăng nhập thất bại');
       }
@@ -136,10 +137,10 @@ export function LoginForm() {
               Đăng nhập với Google
             </Button>
           </form>
-          <div className="mt-4 text-center text-sm">
+          <div className="mt-4 text-center text-sm col-2">
             Bạn chưa có tài khoản?{" "}
-            <Link href="/patient/register" className="underline">
-              Đăng ký ngay!
+            <Link href="/patient/register" className="underline italic">
+              Đăng ký ngay! {" "}
             </Link>
           </div>
         </CardContent>

@@ -36,7 +36,7 @@ export interface LoginRequest {
     date: string;
   }
 
-  export interface specialtyData{
+  export interface specialityData{
     id: string;
     name: string;
     description: string;
