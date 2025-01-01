@@ -4,13 +4,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { format } from "date-fns";
-import { Portal } from '@radix-ui/react-portal';
-import { cn } from "@/lib/utils";
+import { format, isAfter } from "date-fns";
 import { CalendarIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useRouter } from 'next/navigation';
 
 import { fetchSpecialities } from '../../services/api/specialtyService';
@@ -36,13 +33,15 @@ const AppointmentFormModal = ({ open, onOpenChange }: AppointmentFormModalProps)
   const [patientBirthday, setPatientBirthday] = useState('');
   const [patientPhone, setPatientPhone] = useState('');
   const [patientReason, setPatientReason] = useState('');
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const today = new Date();
 
   useEffect(() => {
     const getSpecialities = async () => {
       try {
-        const data = await fetchSpecialities(); 
+        const data = await fetchSpecialities();
         setSpecialities(data);
-      } catch (error) { 
+      } catch (error) {
         console.error(error);
       }
     };
@@ -50,11 +49,13 @@ const AppointmentFormModal = ({ open, onOpenChange }: AppointmentFormModalProps)
   }, []);
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
-    const today = new Date();
-    if (selectedDate && selectedDate > today) {
-      setDate(selectedDate);
-    } else {
-      alert(`Vui lòng chọn sau ngày ${today.toLocaleDateString()}.`);
+    if (selectedDate) {
+      if (!isAfter(selectedDate, today)) {
+        alert(`Vui lòng chọn sau ngày ${today.toLocaleDateString()}.`);      
+      } else {
+        setDate(selectedDate); 
+        setIsCalendarOpen(false); 
+      }
     }
   };
 
@@ -87,7 +88,6 @@ const AppointmentFormModal = ({ open, onOpenChange }: AppointmentFormModalProps)
         alert(`Không thể tạo lịch hẹn: ${response.message}`);
       }
     } catch (error: any) {
-      // Handle error network or others
       if (error.response && error.response.data && error.response.data.message) {
         alert(`Lỗi: ${error.response.data.message}`);
       } else {
@@ -171,35 +171,33 @@ const AppointmentFormModal = ({ open, onOpenChange }: AppointmentFormModalProps)
 
           <div className="space-y-2">
             <Label htmlFor="dob">Vui lòng chọn ngày phù hợp với bạn</Label>
-            <Popover>
-              <PopoverTrigger asChild className="w-full p-3 rounded-lg bg-gray-100">
-                <Button
-                  id="dob"
-                  variant={"outline"}
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
+            <div className="relative w-full">
+              <button
+                id="dob"
+                onClick={() => setIsCalendarOpen((prev) => !prev)} 
+                className={`w-full p-3 rounded-lg bg-gray-100 border border-gray-300 text-left ${date ? "text-black" : "text-gray-400"
+                  }`}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4 inline" />
+                <span className="text-sm"> 
+                  {date ? format(date, "dd/MM/yyyy") : "Chọn ngày"}
+                </span>
+              </button>
+
+              {isCalendarOpen && (
+                <div
+                  className="absolute bottom-full left-0 z-50 mt-2 bg-white border border-gray-300 rounded-lg shadow-md"
+                  style={{ zIndex: 9999 }}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "yyyy-MM-dd") : "Chọn ngày"}
-                </Button>
-              </PopoverTrigger>
-              <Portal>
-            <PopoverContent 
-              className="w-auto p-0" 
-              align="start"
-              style={{ zIndex: 50 }}
-            >
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={handleDateSelect}
-                initialFocus
-              />
-            </PopoverContent>
-          </Portal>
-            </Popover>
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={handleDateSelect}
+                    initialFocus
+                  />
+                </div>
+              )}
+            </div>
             <Button
               className="w-full hover:blue-60"
               disabled={!date}
