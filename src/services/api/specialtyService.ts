@@ -1,7 +1,7 @@
 import apiClient from './api';
-import { specialtyData } from './models';
+import { specialityData } from './models';
 
-export const fetchSpecialties = async () => {
+export const fetchSpecialities = async () => {
     try {
         const response = await apiClient.get('/specialty/all'); 
         return response.data; 

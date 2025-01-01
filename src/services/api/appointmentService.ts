@@ -6,6 +6,6 @@ export const createAppointment = async (appointmentData: appointmentData) => {
         const response = await apiClient.post(`/appointment`, appointmentData);
         return response.data;
     } catch (error: any) {
-        throw new Error(error.response.data.message || 'Failed to create appointment');
+        throw error; // Không bọc trong Error() mới
     }
 };

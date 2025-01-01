@@ -1,22 +1,26 @@
 'use client'
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation'
-import hospitalImage from '../../../assets/hospital-image.png'
+import hospitalImage from '../../../assets/hospital-image.png';
+import ServiceSelectionModal from '../ServiceSelectionModal';
+import AppointmentFormModal from '../AppointmentFormModal';
 
 export default function MainViewPatient() {
-  const router = useRouter();
+  const [showServiceModal, setShowServiceModal] = useState(false);
+  const [showAppointmentModal, setShowAppointmentModal] = useState(false);
+
+  const handleBookingClick = () => {
+    setShowServiceModal(true);
+  };
+
+  const handleServiceSelect = () => {
+    setShowServiceModal(false);
+    setShowAppointmentModal(true);
+  };
 
   return (
     <div>
-      {/* Header Section */}
-      <header >
-      </header>
-
-      {/* Main Content */}
       <main className="flex-1 px-4 py-6">
-        {/* Hero Image */}
         <div className="mb-8 h-[300px] w-full overflow-hidden rounded-lg">
           <Image 
             src={hospitalImage}
@@ -27,7 +31,6 @@ export default function MainViewPatient() {
           />
         </div>
 
-        {/* Quick Actions */}
         <div className="flex justify-center gap-4">
           <QuickActionButton text="Hỗ trợ đặt khám" />
           <QuickActionButton text="Lịch sử thanh toán" />
@@ -35,23 +38,34 @@ export default function MainViewPatient() {
           <QuickActionButton text="Tra cứu kết quả khám bệnh" />
         </div>
 
-        {/* Book Appointment Button */}
         <div className="mt-6 flex justify-center">
-          <button className="rounded-lg bg-[#00B074] px-16 py-3 text-white" onClick={() => router.push('/patient/booking')}>
+          <button 
+            className="rounded-lg bg-[#00B074] px-16 py-3 text-white"
+            onClick={handleBookingClick}
+          >
             Đặt khám
           </button>
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="mt-auto py-4 text-center text-sm text-gray-500">
         © 2024 ScheHealth
       </footer>
+
+      <ServiceSelectionModal
+        open={showServiceModal}
+        onOpenChange={setShowServiceModal}
+        onServiceSelect={handleServiceSelect}
+      />
+
+      <AppointmentFormModal
+        open={showAppointmentModal}
+        onOpenChange={setShowAppointmentModal}
+      />
     </div>
   );
 }
 
-// Component for Quick Action Buttons
 function QuickActionButton({ 
   text,
   active = false 
@@ -71,4 +85,3 @@ function QuickActionButton({
     </button>
   );
 }
-
