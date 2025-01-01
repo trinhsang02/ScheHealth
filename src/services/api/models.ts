@@ -36,9 +36,9 @@ export interface appointmentData {
   date: string;
 }
 
-export interface specialityData{
-  id: string;
-  name: string;
-  description: string;
-  image: string;
-}
+  export interface specialityData{
+    id: string;
+    name: string;
+    description: string;
+    image: string;
+  }

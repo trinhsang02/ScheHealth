@@ -18,31 +18,17 @@ export function NavMenu() {
   return (
     <header className="w-full border-b bg-white">
       <div className="flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center space-x-2">
+        <Link href="/patient/homepage" className="flex items-center space-x-2">
           <span className="text-xl font-bold p-5">ScheHealth</span>
         </Link>
         <nav className="flex items-center space-x-6 justify-end p-5">
-          <Link href="/" className="text-sm font-medium transition-colors hover:text-primary">
+          <Link href="/patient/homepage" className="text-sm font-medium transition-colors hover:text-primary">
             Trang chủ
           </Link>
-          <Menubar className="border-0">
-            <MenubarMenu>
-              <MenubarTrigger className="text-sm font-medium transition-colors hover:text-primary data-[state=open]:text-primary">
-                Lịch khám
-              </MenubarTrigger>
-              <MenubarContent>
-                <MenubarItem>
-                  <Link href="/patient/appointment">Đặt lịch khám</Link>
-                </MenubarItem>
-                <MenubarItem>
-                  <Link href="/lich-kham/lich-su">Lịch sử khám</Link>
-                </MenubarItem>
-                <MenubarItem>
-                  <Link href="/lich-kham/theo-doi">Theo dõi lịch khám</Link>
-                </MenubarItem>
-              </MenubarContent>
-            </MenubarMenu>
-          </Menubar>
+
+          <Link href="/ho-so" className="text-sm font-medium transition-colors hover:text-primary">
+            Lịch khám
+          </Link>
           <Link href="/ho-so" className="text-sm font-medium transition-colors hover:text-primary">
             Hồ sơ
           </Link>
@@ -54,10 +40,10 @@ export function NavMenu() {
                 </MenubarTrigger>
                 <MenubarContent>
                   <MenubarItem>
-                    <Link href="/">Thông tin cá nhân</Link>
+                    <Link href="/patient/profile">Thông tin cá nhân</Link>
                   </MenubarItem>
                   <MenubarItem>
-                    <Link href="/">Bảo mật</Link>
+                    <Link href="/patient/">Bảo mật</Link>
                   </MenubarItem>
                   <MenubarItem>
                     <Link href="/">Đăng xuất</Link>
