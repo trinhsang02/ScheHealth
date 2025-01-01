@@ -15,56 +15,49 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { login } from "../../services/api/authService"
-import { LoginRequest } from "@/services/api/models"
+import authService from "../../services/api/authService"
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [loginType, setLoginType] = useState('patient'); 
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
 
   const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
+    e.preventDefault()
+    setError(null)
 
     // Validation
     if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      setError('Email không hợp lệ');
-      return;
+      setError('Email không hợp lệ')
+      return
     }
     if (password.length < 6) {
-      setError('Mật khẩu phải có ít nhất 6 ký tự');
-      return;
+      setError('Mật khẩu phải có ít nhất 6 ký tự')
+      return
     }
 
-    setIsLoading(true);
+    setIsLoading(true)
     try {
-      const loginRequest: LoginRequest = { email, password, login_type: loginType };
-      const response = await login(loginRequest);
+      const response = await authService.login(email, password)
 
       if (response.success && response.data) {
-        // Save token to sessionStorage
-        sessionStorage.setItem('accessToken', response.data.access_token);
-        sessionStorage.setItem('loginType', loginType);
-        sessionStorage.setItem('email', email);
-
-        if (loginType == 'patient')
-          router.push('/patient/homepage');
+        // AuthService sẽ tự động lưu token và thông tin người dùng
+        const dashboardRoute = authService.getDashboardRoute()
+        router.push(dashboardRoute)
       } else {
-        setError(response.message || 'Đăng nhập thất bại');
+        setError(response.message || 'Đăng nhập thất bại')
       }
     } catch (error: any) {
-      console.error('Login error:', error);
-      setError(error.message || 'Lỗi hệ thống, vui lòng thử lại sau');
+      console.error('Login error:', error)
+      setError(error.message || 'Lỗi hệ thống, vui lòng thử lại sau')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <div className="flex h-screen w-full items-center justify-center p-4 sm:p-8">
@@ -92,7 +85,7 @@ export function LoginForm() {
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Mật khẩu</Label>
                 <Link
-                  href="/patient/forgotPassword"
+                  href="/auth/forgot-password"
                   className="text-sm text-muted-foreground underline-offset-4 hover:underline"
                 >
                   Quên mật khẩu?
@@ -133,18 +126,15 @@ export function LoginForm() {
             >
               {isLoading ? 'Đang xử lý...' : 'Đăng nhập'}
             </Button>
-            <Button variant="outline" className="w-full">
-              Đăng nhập với Google
-            </Button>
           </form>
-          <div className="mt-4 text-center text-sm col-2">
+          <div className="mt-4 text-center text-sm">
             Bạn chưa có tài khoản?{" "}
-            <Link href="/patient/register" className="underline italic">
-              Đăng ký ngay! {" "}
+            <Link href="/auth/register" className="underline italic">
+              Đăng ký ngay!
             </Link>
           </div>
         </CardContent>
       </Card>
     </div>
   )
-};
+}
