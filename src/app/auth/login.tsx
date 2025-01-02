@@ -129,7 +129,7 @@ export function LoginForm() {
           </form>
           <div className="mt-4 text-center text-sm">
             Bạn chưa có tài khoản?{" "}
-            <Link href="/auth/register" className="underline italic">
+            <Link href="/patient/register" className="underline italic">
               Đăng ký ngay!
             </Link>
           </div>

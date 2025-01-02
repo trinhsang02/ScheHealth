@@ -33,7 +33,7 @@ export interface RegisterRequest {
   email: string;
   password: string;
   name: string;
-  role: 'doctor' | 'patient';
+  role: string;
   phone?: string;
   address?: string;
   speciality_id?: number; // Nếu đăng ký là bác sĩ
