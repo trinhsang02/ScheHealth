@@ -27,6 +27,8 @@ const AppointmentFormModal = ({ open, onOpenChange }: AppointmentFormModalProps)
   const [showModal, setShowModal] = useState(false);
   const [appointmentNumber, setAppointmentNumber] = useState('');
   const [specialities, setSpecialities] = useState([]);
+  const [specialityId, setSpecialityId] = useState<number | null>(null);
+  const [numericalOrder, setNumericalOrder] = useState<number | null>(null);
   const [selectedSpeciality, setSelectedSpeciality] = useState('');
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [patientName, setPatientName] = useState('');
@@ -79,22 +81,22 @@ const AppointmentFormModal = ({ open, onOpenChange }: AppointmentFormModalProps)
       };
 
       const response = await createAppointment(appointmentData);
-
-      if (response.success) {
-        setAppointmentNumber(response.appointmentNumber);
-        setShowTicketModal(true);
-        onOpenChange(false);
-      } else {
-        alert(`Không thể tạo lịch hẹn: ${response.message}`);
-      }
+      
+      setAppointmentNumber(String(response.id));
+      setNumericalOrder(response.numerical_order);
+      setSpecialityId(response.speciality_id);
+      setShowTicketModal(true);
+      onOpenChange(false);
+      
     } catch (error: any) {
-      if (error.response && error.response.data && error.response.data.message) {
+      if (error.response?.data?.message) {
         alert(`Lỗi: ${error.response.data.message}`);
       } else {
         alert(`Đã xảy ra lỗi không xác định: ${error.message}`);
       }
     }
   };
+
 
   const handleModalChange = (open: boolean) => {
     setShowTicketModal(open);
@@ -214,6 +216,8 @@ const AppointmentFormModal = ({ open, onOpenChange }: AppointmentFormModalProps)
         open={showTicketModal}
         onOpenChange={handleModalChange}
         appointmentNumber={appointmentNumber}
+        numericalOrder={numericalOrder}
+        specialityId={specialityId}
       />
     </>
   );

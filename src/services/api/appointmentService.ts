@@ -1,11 +1,12 @@
 import apiClient from './api';
-import { appointmentData } from './models';
+import { appointmentData, AppointmentResponse } from './models';
 
-export const createAppointment = async (appointmentData: appointmentData) => {
-    try {
-        const response = await apiClient.post(`/appointment`, appointmentData);
-        return response.data;
-    } catch (error: any) {
-        throw error; // Không bọc trong Error() mới
-    }
+export const createAppointment = async (appointmentData: appointmentData): Promise<AppointmentResponse> => {
+  try {
+      const response = await apiClient.post<AppointmentResponse>('/appointment', appointmentData);
+      return response.data;
+  } catch (error: any) {
+      throw error;
+  }
 };
+
