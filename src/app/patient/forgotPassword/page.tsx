@@ -15,14 +15,35 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from 'lucide-react'
+import { useRouter } from "next/navigation"
+import authService from "@/services/api/authService"
 
 const ForgotPasswordPatient: React.FC = () => {
     const [email, setEmail] = useState("")
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Add API if needed
+    if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      setError('Email không hợp lệ')
+      return
+    }
+
+    const resetPasswordRequest = {
+      email,
+      role: 'patient',
+    }
+    try{
+      const response = authService.resetPassword(resetPasswordRequest)
+      console.log('Nhận mật khẩu mới thành công', response);
+      router.push('/')
+    } catch (error: any) {
+      console.error('Login error:', error)
+      setError(error.message || 'Lỗi hệ thống, vui lòng thử lại sau')
+    }
     setIsSubmitted(true)
   }
 
@@ -32,16 +53,16 @@ const ForgotPasswordPatient: React.FC = () => {
         <CardHeader>
           <CardTitle className="text-2xl">Quên mật khẩu</CardTitle>
           <CardDescription>
-            Xác nhận Email chúng tôi sẽ gửi lại mã xác nhận cho bạn.
+            Xác nhận Email chúng tôi sẽ gửi mật khẩu tạm thời cho bạn.
           </CardDescription>
         </CardHeader>
         <CardContent>
           {isSubmitted ? (
             <Alert>
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Check your email</AlertTitle>
+              <AlertTitle>Kiểm tra email của bạn</AlertTitle>
               <AlertDescription>
-                We've sent a password reset link to your email address.
+                Chúng tôi đã gửi mật khẩu mới về email của bạn
               </AlertDescription>
             </Alert>
           ) : (
@@ -58,14 +79,14 @@ const ForgotPasswordPatient: React.FC = () => {
                 />
               </div>
               <Button variant= "system" type="submit" className="w-full">
-                Send Reset Link
+                Lấy lại mật khẩu
               </Button>
             </form>
           )}
           <div className="mt-4 text-center text-sm">
-            Remember your password?{" "}
-            <Link href="/patient/login" className="text-primary underline-offset-4 hover:underline">
-              Back to Login
+            Bạn đã nhớ mật khẩu?{" "}
+            <Link href="/" className="text-primary underline-offset-4 hover:underline">
+              Đăng nhập
             </Link>
           </div>
         </CardContent>

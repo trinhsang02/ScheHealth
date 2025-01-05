@@ -1,18 +1,31 @@
-// import apiClient from './api';
-// import { Patient, NewPatient } from '../models'; // Adjust the import path as necessary
+import apiClient from './api';
+import { PatientProfile } from './models';
 
-// export const getPatients = async (): Promise<Patient[]> => {
-//     const response = await apiClient.get('/patient');
-//     return response.data;
-// };
+export const getPatientProfile = async (): Promise<PatientProfile> => {
+    try {
+        const response = await apiClient.get('/patient/self');
+        if (response.data.success) {
+            return response.data.data;
+        }
+        throw new Error(response.data.message || 'Failed to fetch profile');
+    } catch (error) {
+        console.error('Failed to fetch patient profile:', error);
+        throw new Error('Unable to fetch patient profile. Please try again later.');
+    }
+};
 
-// export const getPatientById = async (id: number): Promise<Patient> => {
-//     const response = await apiClient.get(`/patient/${id}`);
-//     return response.data;
-// };
+export const updatePatientProfile = async (updateData: Partial<PatientProfile>): Promise<PatientProfile> => {
+    try {
+        const response = await apiClient.put(`/patient/${updateData.id}`, updateData);
+        if (response.data.success) {
+            return response.data.data;
+        }
+        throw new Error(response.data.message || 'Failed to update profile');
+    } catch (error: any) {
+        console.error('Failed to update patient profile:', error?.response?.data || error);
+        throw new Error('Unable to update patient profile. Please try again later.');
+    }
+};
 
-// export const createPatient = async (newPatient: NewPatient): Promise<void> => {
-//     await apiClient.post('/patient', newPatient);
-// };
 
-// // Add other patient-related functions as needed
+

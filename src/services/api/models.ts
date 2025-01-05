@@ -29,16 +29,16 @@
     user?: UserData;
   }
 
-  export interface RegisterRequest {
-    email: string;
-    password: string;
-    name: string;
-    role: 'doctor' | 'patient';
-    phone?: string;
-    address?: string;
-    speciality_id?: number; // Nếu đăng ký là bác sĩ
-    birthday?: string;
-  }
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  name: string;
+  role: string;
+  phone?: string;
+  address?: string;
+  speciality_id?: number; // Nếu đăng ký là bác sĩ
+  birthday?: string;
+}
 
   export interface RegisterResponse {
     success: boolean;
@@ -46,10 +46,11 @@
     user?: UserData;
   }
 
-  export interface PasswordResetRequest {
-    email: string;
-    role: 'doctor' | 'patient';
-  }
+export interface PasswordResetRequest {
+  email: string;
+  // role: 'doctor' | 'patient';
+  role: string;
+}
 
   export interface PasswordResetResponse {
     success: boolean;
@@ -69,13 +70,25 @@
     doctor_name?: string;
   }
 
-  export interface specialityData {
-    id: string;
-    name: string;
-    description: string;
-    image: string;
-    doctors_count?: number;
-  }
+export interface specialityData {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  doctors_count?: number;
+}
+
+export interface PatientProfile {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  birthday: string;
+  gender: string;
+  avatar: string;
+  created_at: string;
+}
 
   export interface AppointmentResponse {
     id: number;
