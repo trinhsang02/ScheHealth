@@ -77,7 +77,7 @@ const data = {
     },
     {
       name: "Đăng xuất",
-      url: "#",
+      url: "/",
       icon: LogOut,
     },
   ],
@@ -130,7 +130,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        {/* Logo app */}
+        <span className="text-xl font-bold p-5">ScheHealth</span>
       </SidebarHeader>
       <SidebarContent>
         <NavFunction projects={data.coreFeatures} selectedItem={selectedItem} setSelectedItem={setSelectedItem} />

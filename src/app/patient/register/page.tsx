@@ -144,7 +144,7 @@ const RegisterPatient: React.FC = () => {
           </form>
           <div className="mt-4 text-center text-sm">
             Bạn đã có tài khoản?{" "}
-            <Link href="/patient/login" className="underline">
+            <Link href="/" className="underline">
               Đăng nhập ngay
             </Link>
           </div>

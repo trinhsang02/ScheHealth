@@ -7,14 +7,21 @@ import {
   MenubarContent,
   MenubarItem,
   MenubarMenu,
-  MenubarSeparator,
-  MenubarShortcut,
   MenubarTrigger,
 } from "@/components/ui/menubar"
 import { Button } from "../ui/button"
+import authService from "../../services/api/authService"
+import { useRouter } from 'next/navigation'
 
 export function NavMenu() {
   const [isLoggedIn, setIsLoggedIn] = useState(true)
+  const router = useRouter();
+  const handleLogout = () => {
+    router.push('/')
+    authService.logout()
+    setIsLoggedIn(false)
+  }
+
   return (
     <header className="w-full border-b bg-white">
       <div className="flex h-16 items-center justify-between">
@@ -26,7 +33,7 @@ export function NavMenu() {
             Trang chủ
           </Link>
 
-          <Link href="/ho-so" className="text-sm font-medium transition-colors hover:text-primary">
+          <Link href="/patient/schedule" className="text-sm font-medium transition-colors hover:text-primary">
             Lịch khám
           </Link>
           <Link href="/ho-so" className="text-sm font-medium transition-colors hover:text-primary">
@@ -46,7 +53,8 @@ export function NavMenu() {
                     <Link href="/patient/">Bảo mật</Link>
                   </MenubarItem>
                   <MenubarItem>
-                    <Link href="/">Đăng xuất</Link>
+                    {/* <Link href="/">Đăng xuất</Link> */}
+                    <Button variant="link" onClick={handleLogout}>Đăng xuất</Button>
                   </MenubarItem>
                 </MenubarContent>
               </MenubarMenu>

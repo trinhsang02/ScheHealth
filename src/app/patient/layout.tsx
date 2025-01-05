@@ -36,6 +36,7 @@ export default function RootLayout({
       {/* Layout for all childrens in app folder */}
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning={true}
       >
         <header>
         {hasToken && <NavMenu/>}

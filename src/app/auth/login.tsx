@@ -85,7 +85,7 @@ export function LoginForm() {
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Mật khẩu</Label>
                 <Link
-                  href="/auth/forgot-password"
+                  href="/patient/forgotPassword"
                   className="text-sm text-muted-foreground underline-offset-4 hover:underline"
                 >
                   Quên mật khẩu?

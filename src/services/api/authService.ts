@@ -91,6 +91,7 @@ class AuthService {
   logout(): void {
     delete apiClient.defaults.headers.common['Authorization'];
     sessionStorage.clear();
+    // window.location.reload();
   }
 
   isAuthenticated(): boolean {

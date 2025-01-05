@@ -48,7 +48,8 @@ export interface RegisterResponse {
 
 export interface PasswordResetRequest {
   email: string;
-  role: 'doctor' | 'patient';
+  // role: 'doctor' | 'patient';
+  role: string;
 }
 
 export interface PasswordResetResponse {
@@ -75,4 +76,16 @@ export interface specialityData {
   description: string;
   image: string;
   doctors_count?: number;
+}
+
+export interface PatientProfile {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  birthday: string;
+  gender: string;
+  avatar: string;
+  created_at: string;
 }

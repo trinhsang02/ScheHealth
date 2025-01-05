@@ -16,12 +16,6 @@ export default function Page() {
   return (
     <SidebarProvider>
       <LoginForm />
-      <button onClick={() => router.push('/patient/homepage')}>
-      Đến Trang Đăng Nhập
-      </button>
-      <button onClick={() => router.push('/doctor')}>
-      Đến Trang bác sĩ
-      </button>
     </SidebarProvider> 
   );
 }
