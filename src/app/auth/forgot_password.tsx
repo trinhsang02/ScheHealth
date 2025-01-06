@@ -1,30 +1,30 @@
-'use client'
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
+import { useState } from "react";
+import Link from "next/link";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircle } from 'lucide-react'
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 export default function ForgotPasswordForm() {
-  const [email, setEmail] = useState("")
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [email, setEmail] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // Add API if needed
-    setIsSubmitted(true)
-  }
+    setIsSubmitted(true);
+  };
 
   return (
     <div className="flex h-screen w-full items-center justify-center p-4 sm:p-8">
@@ -64,13 +64,15 @@ export default function ForgotPasswordForm() {
           )}
           <div className="mt-4 text-center text-sm">
             Remember your password?{" "}
-            <Link href="/patient/login" className="text-primary underline-offset-4 hover:underline">
+            <Link
+              href="/patient/login"
+              className="text-primary underline-offset-4 hover:underline"
+            >
               Back to Login
             </Link>
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-

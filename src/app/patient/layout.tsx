@@ -1,10 +1,9 @@
-"use client"
+"use client";
 
-import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { NavMenu } from "@/components/NavMenu/NavMenu";
 import { useEffect, useState } from "react";
-import { metadata } from './metadata';
+import { metadata } from "./metadata";
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -28,19 +27,16 @@ export default function RootLayout({
   useEffect(() => {
     const token = sessionStorage.getItem("accessToken");
     setHasToken(!!token);
-  }, [])
+  }, []);
 
   return (
     <html lang="en">
-
       {/* Layout for all childrens in app folder */}
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning={true}
       >
-        <header>
-        {hasToken && <NavMenu/>}
-        </header> 
+        <header>{hasToken && <NavMenu />}</header>
         <main className="flex-1 overflow-auto">{children}</main>
       </body>
     </html>
