@@ -1,21 +1,25 @@
-import { format } from "date-fns"
+import { format } from "date-fns";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 
 interface AppointmentTicketModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  appointmentNumber: string;
+  appointmentDate: string;
+  appointmentTime: string;
+  appointmentNumber: number;
 }
 
 const AppointmentTicketModal = ({
   open,
   onOpenChange,
   appointmentNumber,
+  appointmentDate,
+  appointmentTime,
 }: AppointmentTicketModalProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -34,12 +38,13 @@ const AppointmentTicketModal = ({
             Số thứ tự: {appointmentNumber}
           </div>
           <div className="text-sm">
-            Ngày: {format(new Date(), "dd-MM-yyyy")}
+            Ngày: {appointmentDate}
             <br />
-            Giờ: {format(new Date(), "HH:mm:ss")}
+            Giờ: {appointmentTime}
           </div>
           <p className="text-sm italic">
-            Số khám bệnh cho ngày mai!
+            Lưu ý: Bạn cần đến sớm 30 phút trước giờ khám để được hỗ trợ tốt
+            hơn.
           </p>
         </div>
       </DialogContent>

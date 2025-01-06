@@ -72,6 +72,7 @@ const AppointmentForm = () => {
       };
 
       const response = await createAppointment(appointmentData);
+      console.log("response", JSON.stringify(response));
 
       if (response.success) {
         // Create Appointment successful

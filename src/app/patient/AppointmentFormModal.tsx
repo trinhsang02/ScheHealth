@@ -1,40 +1,57 @@
-'use client'
-import React, { useEffect, useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+"use client";
+import React, { useEffect, useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { format, isAfter } from "date-fns";
-import { CalendarIcon } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useRouter } from 'next/navigation';
+import { CalendarIcon } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useRouter } from "next/navigation";
 
-import { fetchSpecialities } from '../../services/api/specialtyService';
-import { specialityData } from '../../services/api/models';
-import { createAppointment } from '../../services/api/appointmentService';
-import AppointmentTicketModal from './AppointmentTicketModal';
+import { fetchSpecialities } from "../../services/api/specialtyService";
+import { specialityData } from "../../services/api/models";
+import { createAppointment } from "../../services/api/appointmentService";
+import AppointmentTicketModal from "./AppointmentTicketModal";
 import { jwtDecode } from "jwt-decode";
+import { RootState } from "@/store/store";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 interface AppointmentFormModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const AppointmentFormModal = ({ open, onOpenChange }: AppointmentFormModalProps) => {
+const AppointmentFormModal = ({
+  open,
+  onOpenChange,
+}: AppointmentFormModalProps) => {
   const router = useRouter();
   const [showTicketModal, setShowTicketModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [appointmentNumber, setAppointmentNumber] = useState('');
+  const [appointmentNumber, setAppointmentNumber] = useState(0);
   const [specialities, setSpecialities] = useState([]);
-  const [selectedSpeciality, setSelectedSpeciality] = useState('');
+  const [selectedSpeciality, setSelectedSpeciality] = useState("");
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const [patientName, setPatientName] = useState('');
-  const [patientBirthday, setPatientBirthday] = useState('');
-  const [patientPhone, setPatientPhone] = useState('');
-  const [patientReason, setPatientReason] = useState('');
+  const [patientReason, setPatientReason] = useState("");
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const today = new Date();
+  const [appointmentDate, setAppointmentDate] = useState("");
+  const [appointmentTime, setAppointmentTime] = useState("");
+  const authState = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     const getSpecialities = async () => {
@@ -51,44 +68,50 @@ const AppointmentFormModal = ({ open, onOpenChange }: AppointmentFormModalProps)
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
       if (!isAfter(selectedDate, today)) {
-        alert(`Vui lòng chọn sau ngày ${today.toLocaleDateString()}.`);      
+        alert(`Vui lòng chọn sau ngày ${today.toLocaleDateString()}.`);
       } else {
-        setDate(selectedDate); 
-        setIsCalendarOpen(false); 
+        setDate(selectedDate);
+        setIsCalendarOpen(false);
       }
     }
   };
 
   const handleSubmit = async () => {
-    const token = sessionStorage.getItem('accessToken');
-    if (!token || !date || !selectedSpeciality) return;
-
-    const decoded = jwtDecode(token) as {
-      sub: string;
-    };
+    if (!authState.user || !date || !selectedSpeciality) {
+      alert("Vui lòng điền đầy đủ thông tin");
+      return;
+    }
+    console.log("accessToken", sessionStorage.getItem("accessToken"));
 
     try {
       const appointmentData = {
-        patient_id: Number(decoded.sub),
-        patient_name: patientName,
-        patient_birthday: patientBirthday,
-        patient_phone: patientPhone,
+        patient_id: Number(authState.user.id),
+        patient_name: authState.user.name,
+        patient_birthday: authState.user.birthday,
+        patient_phone: authState.user.phone,
         patient_reason: patientReason,
         speciality_id: Number(selectedSpeciality),
-        date: format(date, 'yyyy-MM-dd'),
+        date: format(date, "yyyy-MM-dd"),
       };
 
       const response = await createAppointment(appointmentData);
+      console.log("response", response);
 
       if (response.success) {
-        setAppointmentNumber(response.appointmentNumber);
+        setAppointmentNumber(response.data.numerical_order);
+        setAppointmentDate(format(date, "yyyy-MM-dd"));
+        setAppointmentTime(response.data.appointment_time);
         setShowTicketModal(true);
         onOpenChange(false);
       } else {
         alert(`Không thể tạo lịch hẹn: ${response.message}`);
       }
     } catch (error: any) {
-      if (error.response && error.response.data && error.response.data.message) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
         alert(`Lỗi: ${error.response.data.message}`);
       } else {
         alert(`Đã xảy ra lỗi không xác định: ${error.message}`);
@@ -99,7 +122,7 @@ const AppointmentFormModal = ({ open, onOpenChange }: AppointmentFormModalProps)
   const handleModalChange = (open: boolean) => {
     setShowTicketModal(open);
     if (!open) {
-      router.push('/patient/homepage');
+      router.push("/patient/homepage");
     }
   };
 
@@ -108,7 +131,9 @@ const AppointmentFormModal = ({ open, onOpenChange }: AppointmentFormModalProps)
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold mb-6">Chọn lịch khám</DialogTitle>
+            <DialogTitle className="text-xl font-bold mb-6">
+              Chọn lịch khám
+            </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4 mb-6">
@@ -117,18 +142,18 @@ const AppointmentFormModal = ({ open, onOpenChange }: AppointmentFormModalProps)
                 <Label>Họ và Tên</Label>
                 <Input
                   type="text"
-                  className="w-full"
-                  placeholder="Nguyễn Văn A"
-                  onChange={(e) => setPatientName(e.target.value)}
+                  className="w-full bg-gray-100"
+                  value={authState.user.name}
+                  disabled
                 />
               </div>
               <div>
                 <Label>Ngày sinh</Label>
                 <Input
                   type="text"
-                  className="w-full"
-                  placeholder="01/01/2000"
-                  onChange={e => setPatientBirthday(e.target.value)}
+                  className="w-full bg-gray-100"
+                  value={authState.user.birthday}
+                  disabled
                 />
               </div>
             </div>
@@ -138,7 +163,8 @@ const AppointmentFormModal = ({ open, onOpenChange }: AppointmentFormModalProps)
               <Input
                 type="email"
                 className="w-full p-3 rounded-lg bg-gray-100"
-                placeholder="jane.doe@example.com"
+                value={authState.user.email}
+                disabled
               />
             </div>
 
@@ -147,8 +173,19 @@ const AppointmentFormModal = ({ open, onOpenChange }: AppointmentFormModalProps)
               <Input
                 type="tel"
                 className="w-full p-3 rounded-lg bg-gray-100"
-                placeholder="(+84) 456-7890"
-                onChange={(e) => setPatientPhone(e.target.value)}
+                value={authState.user.phone}
+                disabled
+              />
+            </div>
+
+            <div>
+              <Label>Lý do khám</Label>
+              <Input
+                type="text"
+                className="w-full p-3 rounded-lg"
+                placeholder="Nhập lý do khám của bạn"
+                value={patientReason}
+                onChange={(e) => setPatientReason(e.target.value)}
               />
             </div>
 
@@ -174,12 +211,13 @@ const AppointmentFormModal = ({ open, onOpenChange }: AppointmentFormModalProps)
             <div className="relative w-full">
               <button
                 id="dob"
-                onClick={() => setIsCalendarOpen((prev) => !prev)} 
-                className={`w-full p-3 rounded-lg bg-gray-100 border border-gray-300 text-left ${date ? "text-black" : "text-gray-400"
-                  }`}
+                onClick={() => setIsCalendarOpen((prev) => !prev)}
+                className={`w-full p-3 rounded-lg bg-gray-100 border border-gray-300 text-left ${
+                  date ? "text-black" : "text-gray-400"
+                }`}
               >
                 <CalendarIcon className="mr-2 h-4 w-4 inline" />
-                <span className="text-sm"> 
+                <span className="text-sm">
                   {date ? format(date, "dd/MM/yyyy") : "Chọn ngày"}
                 </span>
               </button>
@@ -213,6 +251,8 @@ const AppointmentFormModal = ({ open, onOpenChange }: AppointmentFormModalProps)
       <AppointmentTicketModal
         open={showTicketModal}
         onOpenChange={handleModalChange}
+        appointmentDate={appointmentDate}
+        appointmentTime={appointmentTime}
         appointmentNumber={appointmentNumber}
       />
     </>
