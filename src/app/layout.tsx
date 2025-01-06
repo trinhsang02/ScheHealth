@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+"use client";
+
 import localFont from "next/font/local";
 import "./globals.css";
 import { NavMenu } from "@/components/NavMenu/NavMenu";
@@ -7,8 +8,9 @@ import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
-
+} from "@/components/ui/sidebar";
+import { Providers } from "@/store/provider";
+import { useEffect, useState } from "react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -21,28 +23,30 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-export const metadata: Metadata = {
-  title: "ScheHealth",
-  description: "Scheduling your health",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
   role: string;
 }>) {
+  const [hasToken, setHasToken] = useState(false);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("accessToken");
+    setHasToken(!!token);
+  }, []);
+
   return (
     <html lang="en">
-
       {/* Layout for all childrens in app folder */}
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning={true}
       >
-        <header>
-          
-        </header>
-        <main className="flex-1 overflow-auto">{children}</main>
+        <Providers>
+          <header>{hasToken && <NavMenu />}</header>
+          <main className="flex-1 overflow-auto">{children}</main>
+        </Providers>
       </body>
     </html>
   );

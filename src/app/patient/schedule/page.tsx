@@ -1,22 +1,29 @@
 // pages/medical-history.tsx
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import Head from 'next/head';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { fetchAppointmentOfPatient, fetchAppointmentBySpecialityID } from '../../../services/api/appointmentService';
-
-
+import React, { useState, useEffect } from "react";
+import Head from "next/head";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import {
+  fetchAppointmentOfPatient,
+  fetchAppointmentBySpecialityID,
+} from "../../../services/api/appointmentService";
 
 interface MedicalRecord {
-  date: string
-  specialty: string
-  doctor: string
-  diagnosis: string
-  status: "completed" | "waiting"
+  date: string;
+  specialty: string;
+  doctor: string;
+  diagnosis: string;
+  status: "completed" | "waiting";
 }
-
 
 const records: MedicalRecord[] = [
   {
@@ -54,11 +61,9 @@ const records: MedicalRecord[] = [
     diagnosis: "",
     status: "waiting",
   },
-]
-
+];
 
 const MedicalHistory: React.FC = () => {
-
   // const [records, setRecords] = useState<MedicalRecord[]>([]);
   // const [specialities, setSpecialities] = useState([]);
 
@@ -79,7 +84,7 @@ const MedicalHistory: React.FC = () => {
       <h2 className="text-2xl font-semibold mb-6">Lịch Sử Khám Chữa Bệnh</h2>
       <div className="rounded-md border p-2 mb-4">
         <Table>
-          <TableHeader className='bg-gray-100 border-b'>
+          <TableHeader className="bg-gray-100 border-b">
             <TableRow>
               <TableHead>Ngày khám</TableHead>
               <TableHead>Chuyên khoa</TableHead>
@@ -112,7 +117,7 @@ const MedicalHistory: React.FC = () => {
         </Table>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default MedicalHistory;

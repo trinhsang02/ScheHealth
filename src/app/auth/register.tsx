@@ -1,23 +1,23 @@
-'use client'
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Eye, EyeOff } from 'lucide-react'
+import { useState } from "react";
+import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export function RegisterForm() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
     <div className="flex h-screen w-full items-center justify-center p-4 sm:p-8">
@@ -51,10 +51,10 @@ export function RegisterForm() {
             <div className="grid gap-2">
               <Label htmlFor="password">Mật khẩu</Label>
               <div className="relative">
-                <Input 
-                  id="password" 
-                  type={showPassword ? "text" : "password"} 
-                  required 
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  required
                 />
                 <Button
                   type="button"
@@ -75,10 +75,10 @@ export function RegisterForm() {
             <div className="grid gap-2">
               <Label htmlFor="confirm-password">Xác nhận lại mật khẩu</Label>
               <div className="relative">
-                <Input 
-                  id="confirm-password" 
-                  type={showConfirmPassword ? "text" : "password"} 
-                  required 
+                <Input
+                  id="confirm-password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  required
                 />
                 <Button
                   type="button"
@@ -86,7 +86,11 @@ export function RegisterForm() {
                   size="icon"
                   className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                  aria-label={
+                    showConfirmPassword
+                      ? "Hide confirm password"
+                      : "Show confirm password"
+                  }
                 >
                   {showConfirmPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -112,6 +116,5 @@ export function RegisterForm() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-
