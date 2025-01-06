@@ -100,7 +100,7 @@ const data = {
     },
     {
       name: "Dịch vụ",
-      url: "#",
+      url: "/doctor/medicalService",
       icon: Briefcase,
     },
   ],
@@ -130,7 +130,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <span className="text-xl font-bold p-5">ScheHealth</span>
+        <span className="text-xl font-bold p-2">ScheHealth</span>
       </SidebarHeader>
       <SidebarContent>
         <NavFunction projects={data.coreFeatures} selectedItem={selectedItem} setSelectedItem={setSelectedItem} />

@@ -11,11 +11,12 @@ import {
 } from "@/components/ui/menubar"
 import { Button } from "../ui/button"
 import authService from "../../services/api/authService"
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
 export function NavMenu() {
   const [isLoggedIn, setIsLoggedIn] = useState(true)
   const router = useRouter();
+  const pathname = usePathname();
   const handleLogout = () => {
     router.push('/')
     authService.logout()
@@ -29,13 +30,33 @@ export function NavMenu() {
           <span className="text-xl font-bold p-5">ScheHealth</span>
         </Link>
         <nav className="flex items-center space-x-6 justify-end p-5">
-          <Link href="/patient/homepage" className="text-sm font-medium transition-colors hover:text-primary">
+          <Link
+            href="/patient/homepage"
+            className={`text-sm font-medium transition-colors hover:text-primary ${pathname === '/patient/homepage' ? 'text-primary' : ''
+              }`}
+          >
             Trang chủ
           </Link>
 
-          <Link href="/patient/schedule" className="text-sm font-medium transition-colors hover:text-primary">
-            Lịch khám
-          </Link>
+          <Menubar className="border-0">
+              <MenubarMenu>
+                <MenubarTrigger className="text-sm font-medium transition-colors hover:text-primary data-[state=open]:text-primary">
+                  Lịch khám
+                </MenubarTrigger>
+                <MenubarContent>
+                  <MenubarItem>
+                    <Button variant="link">
+                      <Link href="/patient/schedule">Lịch sử đặt lịch</Link>
+                    </Button>
+                  </MenubarItem>
+                  <MenubarItem>
+                    <Button variant="link">
+                      <Link href="/patient/schedule">Lịch sử khám bệnh</Link>
+                    </Button>
+                  </MenubarItem>
+                </MenubarContent>
+              </MenubarMenu>
+            </Menubar>
           <Link href="/ho-so" className="text-sm font-medium transition-colors hover:text-primary">
             Hồ sơ
           </Link>
@@ -47,13 +68,16 @@ export function NavMenu() {
                 </MenubarTrigger>
                 <MenubarContent>
                   <MenubarItem>
-                    <Link href="/patient/profile">Thông tin cá nhân</Link>
+                    <Button variant="link">
+                      <Link href="/patient/profile">Thông tin cá nhân</Link>
+                    </Button>
                   </MenubarItem>
                   <MenubarItem>
-                    <Link href="/patient/">Bảo mật</Link>
+                    <Button variant="link">
+                      <Link href="/patient/">Bảo mật</Link>
+                    </Button>
                   </MenubarItem>
                   <MenubarItem>
-                    {/* <Link href="/">Đăng xuất</Link> */}
                     <Button variant="link" onClick={handleLogout}>Đăng xuất</Button>
                   </MenubarItem>
                 </MenubarContent>

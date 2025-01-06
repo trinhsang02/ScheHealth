@@ -76,7 +76,7 @@ const MedicalHistory: React.FC = () => {
 
   return (
     <div className="px-4 py-6">
-      <h2 className="text-2xl font-semibold mb-6">Lịch Sử Khám Chữa Bệnh</h2>
+      <h2 className="text-2xl font-semibold mb-6">Lịch sử khám chữa bệnh</h2>
       <div className="rounded-md border p-2 mb-4">
         <Table>
           <TableHeader className='bg-gray-100 border-b'>

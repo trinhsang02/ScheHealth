@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useState } from 'react';
-import { 
-  Printer, 
-  Search, 
-  XCircle, 
-  X 
+import React, { useEffect, useState } from 'react';
+import {
+  Printer,
+  Search,
+  XCircle,
+  X
 } from 'lucide-react';
+import { fectchAllServices } from '../../services/api/service';
 
 interface Test {
   id: string;
-  code: string;
   name: string;
-  group: string;
+  unit: string;
   price: number;
 }
 
@@ -24,27 +24,42 @@ interface ClsModalProps {
   onSave?: (tests: Test[]) => void;
 }
 
-export default function ClsModal({ 
-  onClose, 
-  patientName, 
-  patientDob, 
+export default function ClsModal({
+  onClose,
+  patientName,
+  patientDob,
   patientGender,
   onSave
 }: ClsModalProps) {
   const [selectedTests, setSelectedTests] = useState<Test[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showPrintModal, setShowPrintModal] = useState(false);
+  const [services, setServices] = useState<Test[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const allTests: Test[] = [
-    { id: 'XN001', code: 'XN001', name: 'Điện giải đồ', group: 'Hóa sinh', price: 120000 },
-    { id: 'XN002', code: 'XN002', name: 'Men gan', group: 'Hóa sinh', price: 150000 },
-    { id: 'XN003', code: 'XN003', name: 'Đường huyết', group: 'Hóa sinh', price: 80000 },
-    { id: 'SA001', code: 'SA001', name: 'Siêu âm tim', group: 'Chẩn đoán hình ảnh', price: 250000 }
-  ];
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fectchAllServices();
+        if (response.success) {
+          setServices(response.data);
+        } else {
+          console.error("Failed to fetch services:", response.message);
+        }
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const filteredTests = allTests.filter(test => 
+    fetchServices();
+  }, []);
+
+  const filteredTests = services.filter(test =>
     test.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    test.code.toLowerCase().includes(searchTerm.toLowerCase())
+    String(test.id).toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleTestSelect = (test: Test) => {
@@ -70,14 +85,14 @@ export default function ClsModal({
           <div className="flex justify-between items-center p-4 border-b">
             <h2 className="text-xl font-semibold">Chỉ định cận lâm sàng</h2>
             <div className="flex gap-2">
-              <button 
+              <button
                 onClick={() => setShowPrintModal(true)}
                 className="btn bg-green-500 text-white flex items-center gap-2 px-4 py-2 rounded"
               >
                 <Printer size={16} />
                 In chỉ định
               </button>
-              <button 
+              <button
                 onClick={onClose}
                 className="btn bg-gray-200 text-gray-700 px-4 py-2 rounded"
               >
@@ -102,8 +117,8 @@ export default function ClsModal({
 
           {/* Search Box */}
           <div className="p-4 flex gap-2">
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="Tìm kiếm xét nghiệm..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -119,8 +134,8 @@ export default function ClsModal({
           {selectedTests.length > 0 && (
             <div className="p-4 bg-gray-50 flex flex-wrap gap-2">
               {selectedTests.map(test => (
-                <div 
-                  key={test.id} 
+                <div
+                  key={test.id}
                   className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full flex items-center gap-2"
                 >
                   {test.name}
@@ -134,54 +149,51 @@ export default function ClsModal({
 
           {/* Tests Table */}
           <div className="p-4">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="p-2 text-left">
-                    <input type="checkbox" />
-                  </th>
-                  <th className="p-2 text-left">Mã XN</th>
-                  <th className="p-2 text-left">Tên xét nghiệm</th>
-                  <th className="p-2 text-left">Nhóm XN</th>
-                  <th className="p-2 text-right">Đơn giá</th>
-                  <th className="p-2 text-center">Thao tác</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTests.map(test => (
-                  <tr key={test.id} className="border-b hover:bg-gray-50">
-                    <td className="p-2">
-                      <input type="checkbox" />
-                    </td>
-                    <td className="p-2">{test.code}</td>
-                    <td className="p-2">{test.name}</td>
-                    <td className="p-2">{test.group}</td>
-                    <td className="p-2 text-right">
-                      {test.price.toLocaleString()} đ
-                    </td>
-                    <td className="p-2 text-center">
-                      <button 
-                        onClick={() => handleTestSelect(test)}
-                        className="text-blue-500 hover:bg-blue-100 px-2 py-1 rounded"
-                      >
-                        Chọn
-                      </button>
-                    </td>
+            {isLoading ? (
+              <div className="text-center py-4">Đang tải dữ liệu...</div>
+            ) : (
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="p-2 text-left">Mã XN</th>
+                    <th className="p-2 text-left">Tên xét nghiệm</th>
+                    <th className="p-2 text-right">Đơn giá</th>
+                    <th className="p-2 text-center">Thao tác</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredTests.map(test => (
+                    <tr key={test.id} className="border-b hover:bg-gray-50">
+                      <td className="p-2">{test.id}</td>
+                      <td className="p-2">{test.name}</td>
+                      {/* <td className="p-2">{test.price}</td> */}
+                      <td className="p-2 text-right">
+                        {test.price ? `${test.price.toLocaleString()} đ` : '0 đ'}
+                      </td>
+                      <td className="p-2 text-center">
+                        <button
+                          onClick={() => handleTestSelect(test)}
+                          className="text-blue-500 hover:bg-blue-100 px-2 py-1 rounded"
+                        >
+                          Chọn
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
 
           {/* Footer Buttons */}
           <div className="p-4 flex justify-end gap-2 border-t">
-            <button 
+            <button
               onClick={onClose}
               className="btn bg-gray-200 text-gray-700 px-4 py-2 rounded"
             >
               Hủy
             </button>
-            <button 
+            <button
               onClick={handleSave}
               className="btn bg-blue-500 text-white px-4 py-2 rounded"
             >
@@ -195,7 +207,7 @@ export default function ClsModal({
       {showPrintModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-white rounded-lg w-[90%] max-w-4xl max-h-[90vh] overflow-auto p-6 relative">
-            <button 
+            <button
               onClick={() => setShowPrintModal(false)}
               className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
             >
@@ -225,16 +237,16 @@ export default function ClsModal({
                     <th className="p-2 text-left">STT</th>
                     <th className="p-2 text-left">Mã XN</th>
                     <th className="p-2 text-left">Tên xét nghiệm</th>
-                    <th className="p-2 text-left">Nhóm XN</th>
+                    {/* <th className="p-2 text-left">Nhóm XN</th> */}
                   </tr>
                 </thead>
                 <tbody>
                   {selectedTests.map((test, index) => (
                     <tr key={test.id} className="border-b">
                       <td className="p-2">{index + 1}</td>
-                      <td className="p-2">{test.code}</td>
+                      <td className="p-2">{test.id}</td>
                       <td className="p-2">{test.name}</td>
-                      <td className="p-2">{test.group}</td>
+                      {/* <td className="p-2">{test.unit}</td> */}
                     </tr>
                   ))}
                 </tbody>
@@ -248,7 +260,7 @@ export default function ClsModal({
             </div>
 
             <div className="mt-6 text-center">
-              <button 
+              <button
                 onClick={() => window.print()}
                 className="btn bg-blue-500 text-white px-6 py-2 rounded flex items-center gap-2 mx-auto"
               >

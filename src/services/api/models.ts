@@ -1,3 +1,5 @@
+import { StringToBoolean } from "class-variance-authority/types";
+
 export interface UserData {
   id: number;
   email: string;
@@ -88,4 +90,40 @@ export interface PatientProfile {
   gender: string;
   avatar: string;
   created_at: string;
+}
+
+export interface Service {
+  id: number;
+  name: string;
+  description?: string;
+  price?: number;
+}
+
+export interface ServiceCreateForm {
+  name: string;
+  description?: string;
+  price?: number;
+}
+
+export interface Medicine {
+  id: number;
+  name: string;
+  description?: string;
+  price?: number;
+  unit: string;
+  manufacture_date: string;
+  expiry_date: string;
+  side_effects: string;
+  dosage: string;
+}
+
+export interface MedicineCreateForm {
+  name: string;
+  description?: string;
+  price?: number;
+  unit: string;
+  manufacture_date: string;
+  expiry_date: string;
+  side_effects: string;
+  dosage: string;
 }
