@@ -148,11 +148,21 @@ export interface MedicalRecord {
 }
 
 export interface Invoice {
-  id: string;
+  id: number;
   date: string;
   medicalRecordId: string;
   totalAmount: number;
   services: Service[];
 }
+
+export interface InvoiceResponse {
+  id: number;
+  medical_record_id: number;
+  time: string;
+  total_price: number;
+  service_names: string[];
+  service_prices: number[];
+}
+
 
 

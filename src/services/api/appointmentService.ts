@@ -25,47 +25,49 @@ export const fetchAppointmentOfPatient = async () => {
 };
 
 export const fetchAppointmentBySpecialityID = async (specialityId: number) => {
-    try {
-        const token = authService.getToken();
+  try {
+    const token = authService.getToken();
 
-        if (!token) {
-            throw new Error('No authentication token found');
-        }
-
-        const response: AxiosResponse = await apiClient.get(`/appointment/specialty/${specialityId}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        return response.data;
-    } catch (error: any) {
-        throw error;
+    if (!token) {
+      throw new Error('No authentication token found');
     }
+
+    const response: AxiosResponse = await apiClient.get(`/appointment/specialty/${specialityId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    return response.data;
+  } catch (error: any) {
+    throw error;
+  }
 };
 
-export const updateAppointmentStatus = async (id: number, status: string) => {
-    try {
-        const token = authService.getToken();
-        if (!token) {
-            throw new Error('No authentication token found');
-        }
-
-        const response: AxiosResponse = await apiClient.put(`/appointment/${id}/status`, 
-            { status },
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            }
-        );
-        
-        return response.data;
-    } catch (error: any) {
-        throw error;
+export const updateAppointmentStatus = async (id: number) => {
+  try {
+    const token = authService.getToken();
+    if (!token) {
+      throw new Error('No authentication token found');
     }
+
+    const response: AxiosResponse = await apiClient.put(`/appointment/status/${id}`,
+      {
+        status: 'paid'
+      },
+      // {
+      //   headers: {
+      //     'Authorization': `Bearer ${token}`,
+      //     'Content-Type': 'application/json'
+      //   }
+      // }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    throw error;
+  }
 };
 
 export const fetchAppointmentHistory = async () => {
