@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Providers } from "@/store/provider";
 import { useEffect, useState } from "react";
+import authService from "@/services/api/authService";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,13 +28,18 @@ export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-  role: string;
 }>) {
   const [hasToken, setHasToken] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
     const token = sessionStorage.getItem("accessToken");
     setHasToken(!!token);
+
+    if (token) {
+      // Fetch the role using the authService
+      authService.getRole(token).then(setRole).catch(() => setRole(null));
+    }
   }, []);
 
   return (
@@ -44,7 +50,7 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         <Providers>
-          <header>{hasToken && <NavMenu />}</header>
+          <header>{hasToken && role === "patient" && <NavMenu />}</header>
           <main className="flex-1 overflow-auto">{children}</main>
         </Providers>
       </body>

@@ -22,38 +22,6 @@ interface BookingHistory {
   status: "completed" | "waiting";
 }
 
-const bookings: BookingHistory[] = [
-  {
-    id: "1",
-    date: "20/11/2024",
-    specialty: "Nội tổng quát",
-    status: "completed",
-  },
-  {
-    id: "1",
-    date: "15/11/2024",
-    specialty: "Tim mạch",
-    status: "completed",
-  },
-  {
-    id: "1",
-    date: "05/11/2024",
-    specialty: "Da liễu",
-    status: "completed",
-  },
-  {
-    id: "1",
-    date: "28/10/2024",
-    specialty: "Răng hàm mặt",
-    status: "completed",
-  },
-  {
-    id: "1",
-    date: "04/01/2025",
-    specialty: "Tim mạch",
-    status: "waiting",
-  },
-];
 
 const handlePayment = (bookingId: string) => {
   // Add logic
