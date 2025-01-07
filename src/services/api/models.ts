@@ -28,7 +28,7 @@ export interface LoginResponse {
   success: boolean;
   message: string;
   data: TokenData | null;
-  user?: UserData;
+  user_data: UserData | null; 
 }
 
 export interface RegisterRequest {
@@ -60,6 +60,7 @@ export interface PasswordResetResponse {
 }
 
 export interface appointmentData {
+  id?: number;
   patient_id: number;
   patient_name: string;
   patient_birthday: string;

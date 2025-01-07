@@ -33,7 +33,6 @@ class AuthService {
         login_type: role,
       });
       console.log("response login", JSON.stringify(response));
-
       console.log("Response data:", response.data);
 
       if (response.data.success) {
@@ -105,16 +104,23 @@ class AuthService {
     if (response.data?.access_token) {
       const token = response.data.access_token;
       apiClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
+  
       sessionStorage.setItem("accessToken", token);
       sessionStorage.setItem("userRole", role);
       sessionStorage.setItem(
         "tokenExpiry",
         (Date.now() + response.data.expires_in * 1000).toString()
       );
-
-      if (response.user) {
-        sessionStorage.setItem("userData", JSON.stringify(response.user));
+  
+      // Lưu user data bao gồm speciality_id vào session storage
+      if (response.user_data) {
+        const userData = {
+          id: response.user_data.id,
+          name: response.user_data.name,
+          role: response.user_data.role,
+          speciality_id: response.user_data.speciality_id
+        };
+        sessionStorage.setItem("userData", JSON.stringify(userData));
       }
     }
   }
