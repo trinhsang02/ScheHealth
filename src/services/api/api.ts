@@ -13,7 +13,7 @@ apiClient.interceptors.request.use(
     const token = sessionStorage.getItem("accessToken");
     console.log("accessToken", token);
     if (token) {
-      config.headers["Auth"] = `Bearer ${token}`;
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },

@@ -39,17 +39,11 @@ class AuthService {
       if (response.data.success) {
         this.setAuthData(response.data, role);
         if (role === "patient") {
-          try {
-            const userData = await apiClient.get("/patient/self");
-            return userData.data;
-          } catch (patientError: any) {
-            console.log("Patient self API error:", {
-              message: patientError.message,
-              status: patientError?.response?.status,
-              data: patientError?.response?.data,
-              headers: patientError?.config?.headers,
-            });
-          }
+          const userData = await apiClient.get("/patient/self");
+          return userData.data;
+        } else {
+          const loginResponse = await apiClient.get("/doctor/self");
+          return loginResponse.data;
         }
       }
     } catch (error: any) {
@@ -61,6 +55,22 @@ class AuthService {
       throw new Error(error?.response?.data?.message || "Đăng nhập thất bại");
     }
     throw new Error("Email hoặc mật khẩu không đúng");
+  }
+
+  async getRole(email: string): Promise<string> {
+    try {
+      const response = await apiClient.get(`/role/${email}`);
+      return response.data;
+    } catch (error: any) {
+      console.error("Get role error:", {
+        message: error.message,
+        status: error?.response?.status,
+        data: error?.response?.data,
+      });
+      throw new Error(
+        error?.response?.data?.message || "Lỗi hệ thống, vui lòng thử lại sau"
+      );
+    }
   }
 
   async register(registerRequest: RegisterRequest): Promise<RegisterResponse> {
