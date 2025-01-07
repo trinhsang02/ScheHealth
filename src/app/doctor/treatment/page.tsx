@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { ChevronLeft, HelpCircle } from 'lucide-react';
 import ClsModal from "../ClsModal";
 import PrescriptionModal from '../Prescription';
+import { Medicine } from '../../../services/api/models';
+
 
 interface VitalSign {
   label: string;
@@ -16,22 +18,10 @@ interface VitalSign {
 
 interface Test {
   id: string;
-  code: string;
   name: string;
-  group: string;
+  unit: string;
   price: number;
 }
-
-interface Medication {
-    id: string;
-    code: string;
-    name: string;
-    unit: string;
-    dosage: string;
-    frequency: string;
-    duration: string;
-    price: number;
-    }
 
 export default function MedicalExaminationPage() {
   // State management
@@ -56,7 +46,7 @@ export default function MedicalExaminationPage() {
 
   // Prescription Modal states
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
-  const [selectedMedications, setSelectedMedications] = useState<Medication[]>([]);
+  const [selectedMedications, setSelectedMedications] = useState<Medicine[]>([]);
   
   // Patient information
   const patientInfo = {
@@ -121,7 +111,7 @@ export default function MedicalExaminationPage() {
     setShowClsModal(false);
   };
 
-  const handlePrescriptionModalSave = (medications: Medication[]) => {
+  const handlePrescriptionModalSave = (medications: Medicine[]) => {
     setSelectedMedications(medications);
     setShowPrescriptionModal(false);
   };
@@ -300,24 +290,24 @@ export default function MedicalExaminationPage() {
           </div>
 
           <div>
-            <label className="block text-sm text-gray-600 mb-2 required">
+            {/* <label className="block text-sm text-gray-600 mb-2 required">
               Tiền sử bệnh
-            </label>
-            <div className="border rounded-lg overflow-hidden">
-              <div className="bg-gray-100 p-2 flex gap-2">
+            </label> */}
+            {/* <div className="border rounded-lg overflow-hidden"> */}
+              {/* <div className="bg-gray-100 p-2 flex gap-2">
                 <button className="hover:bg-gray-200 p-1 rounded">B</button>
                 <button className="hover:bg-gray-200 p-1 rounded">I</button>
                 <button className="hover:bg-gray-200 p-1 rounded">U</button>
                 <button className="hover:bg-gray-200 p-1 rounded">List</button>
-              </div>
-              <textarea 
+              </div> */}
+              {/* <textarea 
                 rows={4} 
                 value={medicalHistory}
                 onChange={(e) => setMedicalHistory(e.target.value)}
                 placeholder="Nhập tiền sử bệnh" 
                 className="w-full px-3 py-2 bg-white"
-              />
-            </div>
+              /> */}
+            {/* </div> */}
           </div>
 
           <div>

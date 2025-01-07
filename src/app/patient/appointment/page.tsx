@@ -72,6 +72,7 @@ const AppointmentForm = () => {
       };
 
       const response = await createAppointment(appointmentData);
+      console.log("response", JSON.stringify(response));
 
       if (response.success) {
         // Create Appointment successful
@@ -212,7 +213,9 @@ const AppointmentForm = () => {
         <AppointmentTicketModal
           open={showModal}
           onOpenChange={handleModalChange}
-          appointmentNumber={appointmentNumber}
+          appointmentNumber={parseInt(appointmentNumber)}
+          appointmentDate={date ? format(date, 'dd-MM-yyyy') : ''}
+          appointmentTime={date ? format(date, 'HH:mm') : ''}
         />
       </div>
     </div>

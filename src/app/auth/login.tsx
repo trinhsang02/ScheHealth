@@ -1,72 +1,89 @@
-'use client'
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Eye, EyeOff } from 'lucide-react'
-import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import authService from "../../services/api/authService"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import authService from "../../services/api/authService";
+import { setCredentials } from "@/store/slices/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, store } from "@/store/store";
+
+const roleOptions = [
+  { value: "", label: "Chọn vai trò" },
+  { value: "patient", label: "Bệnh nhân" },
+  { value: "doctor", label: "Bác sĩ" },
+  { value: "admin", label: "Quản trị viên" },
+];
 
 export function LoginForm() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-
-  const router = useRouter()
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const authState = useSelector((state: RootState) => state.auth);
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
+    e.preventDefault();
+    setError(null);
 
     // Validation
     if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      setError('Email không hợp lệ')
-      return
+      setError("Email không hợp lệ");
+      return;
     }
     if (password.length < 6) {
-      setError('Mật khẩu phải có ít nhất 6 ký tự')
-      return
+      setError("Mật khẩu phải có ít nhất 6 ký tự");
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const response = await authService.login(email, password)
-
+      const role = await authService.getRole(email);
+      console.log("role", role);
+      const response = await authService.login(email, password, role);
+      console.log("response login", JSON.stringify(response));
       if (response.success && response.data) {
-        // AuthService sẽ tự động lưu token và thông tin người dùng
-        const dashboardRoute = authService.getDashboardRoute()
-        router.push(dashboardRoute)
+        dispatch(setCredentials(response.data));
       } else {
-        setError(response.message || 'Đăng nhập thất bại')
+        setError(response.message || "Đăng nhập thất bại");
       }
     } catch (error: any) {
-      console.error('Login error:', error)
-      setError(error.message || 'Lỗi hệ thống, vui lòng thử lại sau')
+      console.error("Login error:", error);
+      setError(error.message || "Lỗi hệ thống, vui lòng thử lại sau");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
+
+  useEffect(() => {
+    if (authState.user) {
+      const dashboardRoute = authService.getDashboardRoute();
+      console.log("Updated Auth State:", authState);
+      router.push(dashboardRoute);
+    }
+  }, [authState, router]);
 
   return (
     <div className="flex h-screen w-full items-center justify-center p-4 sm:p-8">
       <Card className="mx-auto w-full max-w-lg">
         <CardHeader>
           <CardTitle className="text-2xl">Đăng nhập</CardTitle>
-          <CardDescription>
-            Nhập email để đăng nhập ngay!
-          </CardDescription>
+          <CardDescription>Nhập email để đăng nhập ngay!</CardDescription>
         </CardHeader>
         <CardContent>
           <form className="grid gap-6" onSubmit={handleLogin}>
@@ -124,7 +141,7 @@ export function LoginForm() {
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading ? 'Đang xử lý...' : 'Đăng nhập'}
+              {isLoading ? "Đang xử lý..." : "Đăng nhập"}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
@@ -136,5 +153,5 @@ export function LoginForm() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

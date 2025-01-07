@@ -30,7 +30,7 @@ export function NavSystem({
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Hệ thống</SidebarGroupLabel>
+      {/* <SidebarGroupLabel>Hệ thống</SidebarGroupLabel> */}
       <SidebarMenu>
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
