@@ -28,7 +28,7 @@ export interface LoginResponse {
   success: boolean;
   message: string;
   data: TokenData | null;
-  user?: UserData;
+  user_data: UserData | null; 
 }
 
 export interface RegisterRequest {
