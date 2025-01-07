@@ -12,7 +12,7 @@ import {
 class AuthService {
   private static instance: AuthService;
 
-  private constructor() {}
+  private constructor() { }
 
   public static getInstance(): AuthService {
     if (!AuthService.instance) {
@@ -33,6 +33,8 @@ class AuthService {
         login_type: role,
       });
       console.log("response login", JSON.stringify(response));
+
+      console.log("Response data:", response.data);
 
       if (response.data.success) {
         this.setAuthData(response.data, role);

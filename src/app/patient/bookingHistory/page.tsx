@@ -12,6 +12,44 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { loadStripe } from '@stripe/stripe-js';
+
+// Khởi tạo Stripe Promise với public key
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+
+// const handlePayment = async (booking: BookingHistory) => {
+//     try {
+//         const stripe = await stripePromise;
+//         if (!stripe) throw new Error('Stripe failed to initialize');
+
+//         // Gọi API để tạo checkout session
+//         const response = await fetch('/api/create-checkout-session', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify({
+//                 bookingId: booking.id,
+//                 specialty: booking.specialty,
+//             }),
+//         });
+
+//         const { sessionId } = await response.json();
+
+//         // Chuyển hướng tới Stripe Checkout
+//         const result = await stripe.redirectToCheckout({
+//             sessionId,
+//         });
+
+//         if (result.error) {
+//             console.error(result.error);
+//             // Xử lý lỗi ở đây
+//         }
+//     } catch (error) {
+//         console.error('Payment error:', error);
+//         // Hiển thị thông báo lỗi cho người dùng
+//     }
+// };
 
 interface BookingHistory {
     id: string;
@@ -54,7 +92,7 @@ const bookings: BookingHistory[] = [
 ];
 
 const handlePayment = (bookingId: string) => {
-    // Add logic
+    
     console.log('Processing payment for booking:', bookingId);
 };
 
