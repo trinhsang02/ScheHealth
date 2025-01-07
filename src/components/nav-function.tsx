@@ -9,13 +9,6 @@ import {
 } from "lucide-react"
 
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
@@ -44,7 +37,6 @@ export function NavFunction({
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Chức năng chính</SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
@@ -52,7 +44,7 @@ export function NavFunction({
               <a 
                 href={item.url} 
                 onClick={() => setSelectedItem(item.name)}
-                className={selectedItem === item.name ? 'text-blue-500' : ''}
+                className="text-lg"
               >
                 <item.icon />
                 <span>{item.name}</span>

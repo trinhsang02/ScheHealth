@@ -46,6 +46,9 @@ const AppointmentTicketModal = ({
             Lưu ý: Bạn cần đến sớm 30 phút trước giờ khám để được hỗ trợ tốt
             hơn.
           </p>
+          <p className="text-lg font-bold text-red-600 mt-4">
+            Vui lòng thanh toán để hoàn tất đặt lịch!
+          </p>
         </div>
       </DialogContent>
     </Dialog>

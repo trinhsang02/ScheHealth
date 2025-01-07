@@ -143,7 +143,7 @@ const AppointmentFormModal = ({
                 <Input
                   type="text"
                   className="w-full bg-gray-100"
-                  value={authState.user.name}
+                  value={authState.user ? authState.user.name : ''}
                   disabled
                 />
               </div>
@@ -152,7 +152,7 @@ const AppointmentFormModal = ({
                 <Input
                   type="text"
                   className="w-full bg-gray-100"
-                  value={authState.user.birthday}
+                  value={authState.user ? authState.user.birthday : ''}
                   disabled
                 />
               </div>
@@ -163,7 +163,7 @@ const AppointmentFormModal = ({
               <Input
                 type="email"
                 className="w-full p-3 rounded-lg bg-gray-100"
-                value={authState.user.email}
+                value={authState.user ? authState.user.email : ''}
                 disabled
               />
             </div>
@@ -173,7 +173,7 @@ const AppointmentFormModal = ({
               <Input
                 type="tel"
                 className="w-full p-3 rounded-lg bg-gray-100"
-                value={authState.user.phone}
+                value={authState.user ? authState.user.phone : ''}
                 disabled
               />
             </div>
@@ -212,9 +212,8 @@ const AppointmentFormModal = ({
               <button
                 id="dob"
                 onClick={() => setIsCalendarOpen((prev) => !prev)}
-                className={`w-full p-3 rounded-lg bg-gray-100 border border-gray-300 text-left ${
-                  date ? "text-black" : "text-gray-400"
-                }`}
+                className={`w-full p-3 rounded-lg bg-gray-100 border border-gray-300 text-left ${date ? "text-black" : "text-gray-400"
+                  }`}
               >
                 <CalendarIcon className="mr-2 h-4 w-4 inline" />
                 <span className="text-sm">
@@ -254,6 +253,7 @@ const AppointmentFormModal = ({
         appointmentDate={appointmentDate}
         appointmentTime={appointmentTime}
         appointmentNumber={appointmentNumber}
+
       />
     </>
   );

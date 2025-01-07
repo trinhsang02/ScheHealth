@@ -43,32 +43,7 @@ const data = {
     icon: HomeIcon,
   }
 ],
-  // navMain: [
-  //   {
-  //     title: "Dashboard",
-  //     url: "#",
-  //     icon: HomeIcon,
-  //   },
-  //   {
-  //     title: "Models",
-  //     url: "#",
-  //     icon: Bot,
-  //     items: [
-  //       {
-  //         title: "Genesis",
-  //         url: "#",
-  //       },
-  //       {
-  //         title: "Explorer",
-  //         url: "#",
-  //       },
-  //       {
-  //         title: "Quantum",
-  //         url: "#",
-  //       },
-  //     ],
-  //   },
-  // ],
+
   system: [
     {
       name: "Cài đặt",
@@ -112,7 +87,7 @@ const data = {
       icon: HomeIcon,
     },
     {
-      name: "Quản lý lịch hẹn",
+      name: "Danh sách lịch hẹn",
       url: "/doctor/Patientlist",
       icon: CalendarCheck,
     },
@@ -120,6 +95,16 @@ const data = {
       name: "Quản lý ca khám",
       url: "#",
       icon: List,
+    },
+    {
+      name: "Cài đặt",
+      url: "/doctor/setting",
+      icon: Settings,
+    },
+    {
+      name: "Đăng xuất",
+      url: "/",
+      icon: LogOut,
     },
   ]
 }
@@ -130,12 +115,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <span className="text-xl font-bold p-2">ScheHealth</span>
+        <span className="text-xl font-bold p-1">ScheHealth</span>
       </SidebarHeader>
       <SidebarContent>
         <NavFunction projects={data.coreFeatures} selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
-        <NavAdmin projects={data.admin} selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
-        <NavSystem projects={data.system} selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
+        {/* <NavAdmin projects={data.admin} selectedItem={selectedItem} setSelectedItem={setSelectedItem} /> */}
+        {/* <NavSystem projects={data.system} selectedItem={selectedItem} setSelectedItem={setSelectedItem} /> */}
       </SidebarContent>
 
       <SidebarFooter>

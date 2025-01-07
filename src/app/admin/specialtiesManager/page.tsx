@@ -17,11 +17,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { MoreVertical, Plus, Search } from "lucide-react";
-import { AddSpecialtyModal } from "../AddSpecialtyModal";
+import { AddSpecialtyModal } from "../../doctor/AddSpecialtyModal";
 import React from "react";
 
 // Sample data - replace with actual data from your backend
-const initialSpecialties  = [
+const initialSpecialties = [
   { id: 1, name: "Da liễu", count: 12 },
   { id: 2, name: "Tim mạch", count: 12 },
   { id: 3, name: "Nội", count: 12 },
