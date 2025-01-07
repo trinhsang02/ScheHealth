@@ -69,6 +69,7 @@ const AppointmentFormModal = ({ open, onOpenChange }: AppointmentFormModalProps)
 
     try {
       const appointmentData = {
+        id: undefined,
         patient_id: Number(decoded.sub),
         patient_name: patientName,
         patient_birthday: patientBirthday,

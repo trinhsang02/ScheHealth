@@ -58,14 +58,13 @@ export interface PasswordResetResponse {
 }
 
 export interface appointmentData {
-  id: number;
+  id?: number;
   patient_id: number;
   patient_name: string;
   patient_birthday: string;
   patient_phone: string;
   patient_reason: string;
   speciality_id: number;
-  numerical_order: number;
   date: string;
   status?: 'Scheduled' | 'In Progress' | 'Completed' | 'Cancelled';
   doctor_id?: number;
