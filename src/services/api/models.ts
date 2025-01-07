@@ -1,33 +1,33 @@
-  export interface UserData {
-    id: number;
-    email: string;
-    name: string;
-    role: string;
-    phone?: string;
-    address?: string;
-    avatar?: string;
-    speciality_id?: number; // Cho bác sĩ
-    birthday?: string;
-  }
+export interface UserData {
+  id: number;
+  email: string;
+  name: string;
+  role: string;
+  phone?: string;
+  address?: string;
+  avatar?: string;
+  speciality_id?: number; // Cho bác sĩ
+  birthday?: string;
+}
 
-  export interface TokenData {
-    access_token: string;
-    token_type: string;
-    expires_in: number;
-  }
+export interface TokenData {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+}
 
-  export interface LoginRequest {
-    email: string;
-    password: string;
-    login_type: string;
-  }
+export interface LoginRequest {
+  email: string;
+  password: string;
+  login_type: string;
+}
 
-  export interface LoginResponse {
-    success: boolean;
-    message: string;
-    data: TokenData | null;
-    user?: UserData;
-  }
+export interface LoginResponse {
+  success: boolean;
+  message: string;
+  data: TokenData | null;
+  user?: UserData;
+}
 
 export interface RegisterRequest {
   email: string;
@@ -40,11 +40,11 @@ export interface RegisterRequest {
   birthday?: string;
 }
 
-  export interface RegisterResponse {
-    success: boolean;
-    message: string;
-    user?: UserData;
-  }
+export interface RegisterResponse {
+  success: boolean;
+  message: string;
+  user?: UserData;
+}
 
 export interface PasswordResetRequest {
   email: string;
@@ -52,23 +52,25 @@ export interface PasswordResetRequest {
   role: string;
 }
 
-  export interface PasswordResetResponse {
-    success: boolean;
-    message: string;
-  }
+export interface PasswordResetResponse {
+  success: boolean;
+  message: string;
+}
 
-  export interface appointmentData {
-    patient_id: number;
-    patient_name: string;
-    patient_birthday: string;
-    patient_phone: string;
-    patient_reason: string;
-    speciality_id: number;
-    date: string;
-    status?: 'pending' | 'approved' | 'cancelled';
-    doctor_id?: number;
-    doctor_name?: string;
-  }
+export interface appointmentData {
+  id: number;
+  patient_id: number;
+  patient_name: string;
+  patient_birthday: string;
+  patient_phone: string;
+  patient_reason: string;
+  speciality_id: number;
+  numerical_order: number;
+  date: string;
+  status?: 'Scheduled' | 'In Progress' | 'Completed' | 'Cancelled';
+  doctor_id?: number;
+  doctor_name?: string;
+}
 
 export interface specialityData {
   id: string;
@@ -88,10 +90,4 @@ export interface PatientProfile {
   gender: string;
   avatar: string;
   created_at: string;
-}
-
-  export interface AppointmentResponse {
-    id: number;
-    numerical_order: number;
-    speciality_id: number;
 }

@@ -10,13 +10,3 @@ export const fetchSpecialities = async () => {
         throw error;
     }
 };
-
-export const getSpecialtyById = async (id: number) => {
-    try {
-        const response = await apiClient.get(`/specialty/${id}`);
-        return response.data;
-    } catch (error) {
-        console.error(`Error fetching specialty with ID ${id}:`, error);
-        throw error;
-    }
-};

@@ -1,5 +1,6 @@
 import apiClient from './api';
 import {
+  LoginRequest,
   RegisterRequest,
   PasswordResetRequest,
   LoginResponse,
