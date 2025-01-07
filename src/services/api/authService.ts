@@ -147,7 +147,7 @@ class AuthService {
       case "patient":
         return "/patient/homepage";
       default:
-        return "/login";
+        return "/";
     }
   }
 

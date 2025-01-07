@@ -146,3 +146,13 @@ export interface MedicalRecord {
   doctor_name: string;
   payment_status: number;
 }
+
+export interface Invoice {
+  id: string;
+  date: string;
+  medicalRecordId: string;
+  totalAmount: number;
+  services: Service[];
+}
+
+
