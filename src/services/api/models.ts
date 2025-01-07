@@ -67,7 +67,7 @@ export interface appointmentData {
   patient_reason: string;
   speciality_id: number;
   date: string;
-  status?: 'pending' | 'approved' | 'cancelled';
+  status?: "pending" | "approved" | "cancelled";
   doctor_id?: number;
   doctor_name?: string;
 }
@@ -126,4 +126,22 @@ export interface MedicineCreateForm {
   expiry_date: string;
   side_effects: string;
   dosage: string;
+}
+
+export interface AppointmentHistoryResponse {
+  id: number;
+  appointment_time: string;
+  date: string;
+  numerical_order: number;
+  status: string;
+  speciality_name?: string;
+}
+
+export interface MedicalRecord {
+  id: number;
+  appointment_id?: string;
+  date: string;
+  diagnosis: string;
+  doctor_name: string;
+  payment_status: number;
 }

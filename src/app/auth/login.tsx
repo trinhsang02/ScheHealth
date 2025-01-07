@@ -32,7 +32,6 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");
   const [error, setError] = useState<string | null>(null);
   const dispatch = useDispatch();
   const router = useRouter();
@@ -41,11 +40,6 @@ export function LoginForm() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    if (!role) {
-      setError("Vui lòng chọn vai trò");
-      return;
-    }
 
     // Validation
     if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
@@ -59,10 +53,11 @@ export function LoginForm() {
 
     setIsLoading(true);
     try {
+      const role = await authService.getRole(email);
+      console.log("role", role);
       const response = await authService.login(email, password, role);
       console.log("response login", JSON.stringify(response));
       if (response.success && response.data) {
-        const dashboardRoute = authService.getDashboardRoute();
         dispatch(setCredentials(response.data));
       } else {
         setError(response.message || "Đăng nhập thất bại");
@@ -102,22 +97,6 @@ export function LoginForm() {
                 placeholder="m@example.com"
                 required
               />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="role">Vai trò</Label>
-              <select
-                id="role"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                required
-              >
-                {roleOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
             </div>
             <div className="grid gap-2">
               <div className="flex items-center justify-between">
