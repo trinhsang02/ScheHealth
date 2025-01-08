@@ -1,19 +1,22 @@
 "use client";
 
-import React, { useState } from 'react';
-import { ChevronLeft, HelpCircle } from 'lucide-react';
+import { useSearchParams } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { ChevronLeft, HelpCircle } from "lucide-react";
 import ClsModal from "../ClsModal";
-import PrescriptionModal from '../Prescription';
-import { Medicine } from '../../../services/api/models';
-import { getPatientProfile } from '@/services/api/patientService';
-
+import PrescriptionModal from "../Prescription";
+import { Medicine } from "../../../services/api/models";
+import {
+  getPatientById,
+  getPatientProfile,
+} from "@/services/api/patientService";
 
 interface VitalSign {
   label: string;
   value: string;
   unit: string;
   required?: boolean;
-  type?: 'text' | 'number';
+  type?: "text" | "number";
   step?: string;
 }
 
@@ -25,21 +28,24 @@ interface Test {
 }
 
 export default function MedicalExaminationPage() {
+  const searchParams = useSearchParams();
+  const patientId = searchParams.get("patientId");
+
   // State management
   const [vitalSigns, setVitalSigns] = useState<Record<string, string>>({
-    temperature: '',
-    bloodPressureSystolic: '',
-    bloodPressureDiastolic: '',
-    heartRate: '',
-    spO2: '',
-    weight: '',
-    height: ''
+    temperature: "",
+    bloodPressureSystolic: "",
+    bloodPressureDiastolic: "",
+    heartRate: "",
+    spO2: "",
+    weight: "",
+    height: "",
   });
 
-  const [medicalHistory, setMedicalHistory] = useState('');
-  const [clinicalExamination, setClinicalExamination] = useState('');
-  const [diagnosis, setDiagnosis] = useState('');
-  const [examinationReason, setExaminationReason] = useState('');
+  const [medicalHistory, setMedicalHistory] = useState("");
+  const [clinicalExamination, setClinicalExamination] = useState("");
+  const [diagnosis, setDiagnosis] = useState("");
+  const [examinationReason, setExaminationReason] = useState("");
 
   // CLS Modal states
   const [showClsModal, setShowClsModal] = useState(false);
@@ -47,62 +53,88 @@ export default function MedicalExaminationPage() {
 
   // Prescription Modal states
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
-  const [selectedMedications, setSelectedMedications] = useState<Medicine[]>([]);
-  
-  // Patient information
-  const patientInfo = {
-    name: 'Nguyễn Văn A',
-    gender: 'Nam',
-    dob: '01/01/1990',
-    phone: '0123456789',
-    address: 'Hà Nội'
-  };
+  const [selectedMedications, setSelectedMedications] = useState<Medicine[]>(
+    []
+  );
+
+  // Add patient info state
+  const [patientInfo, setPatientInfo] = useState({
+    name: "",
+    gender: "",
+    dob: "",
+    phone: "",
+    address: "",
+  });
+
+  // Load patient data when component mounts
+  useEffect(() => {
+    const loadPatientData = async () => {
+      if (patientId) {
+        try {
+          const patientData = await getPatientById(Number(patientId));
+          console.log(patientData);
+          // setPatientInfo({
+          //   name: patientData.name,
+          //   gender: patientData.gender,
+          //   dob: patientData.dob,
+          //   phone: patientData.phone,
+          //   address: patientData.address,
+          // });
+        } catch (error) {
+          console.error("Error loading patient data:", error);
+          // Handle error appropriately
+        }
+      }
+    };
+
+    loadPatientData();
+  }, [patientId]);
 
   // Vital Signs Configuration
   const vitalSignsConfig: VitalSign[] = [
-    { 
-      label: 'Nhiệt độ', 
-      value: vitalSigns.temperature, 
-      unit: '°C', 
-      required: true, 
-      type: 'number', 
-      step: '0.1' 
+    {
+      label: "Nhiệt độ",
+      value: vitalSigns.temperature,
+      unit: "°C",
+      required: true,
+      type: "number",
+      step: "0.1",
     },
-    { 
-      label: 'Huyết áp', 
-      value: `${vitalSigns.bloodPressureSystolic}/${vitalSigns.bloodPressureDiastolic}`, 
-      unit: 'mmHg', 
-      required: true 
+    {
+      label: "Huyết áp",
+      value: `${vitalSigns.bloodPressureSystolic}/${vitalSigns.bloodPressureDiastolic}`,
+      unit: "mmHg",
+      required: true,
     },
-    { 
-      label: 'Nhịp tim', 
-      value: vitalSigns.heartRate, 
-      unit: 'bpm', 
-      required: true 
+    {
+      label: "Nhịp tim",
+      value: vitalSigns.heartRate,
+      unit: "bpm",
+      required: true,
     },
-    { 
-      label: 'SpO2', 
-      value: vitalSigns.spO2, 
-      unit: '%', 
-      required: true 
+    {
+      label: "SpO2",
+      value: vitalSigns.spO2,
+      unit: "%",
+      required: true,
     },
-    { 
-      label: 'Cân nặng', 
-      value: vitalSigns.weight, 
-      unit: 'kg' 
+    {
+      label: "Cân nặng",
+      value: vitalSigns.weight,
+      unit: "kg",
     },
-    { 
-      label: 'Chiều cao', 
-      value: vitalSigns.height, 
-      unit: 'cm' 
-    }
+    {
+      label: "Chiều cao",
+      value: vitalSigns.height,
+      unit: "cm",
+    },
   ];
 
   // Handlers
   const handleVitalSignChange = (key: string, value: string) => {
-    setVitalSigns(prev => ({
+    setVitalSigns((prev) => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }));
   };
 
@@ -117,29 +149,33 @@ export default function MedicalExaminationPage() {
   };
 
   const renderVitalSignInput = (sign: VitalSign, index: number) => {
-    const isBloodPressure = sign.label === 'Huyết áp';
+    const isBloodPressure = sign.label === "Huyết áp";
 
     if (isBloodPressure) {
       return (
         <div key={index} className="vital-sign">
-          <label className={`${sign.required ? 'required' : ''}`}>
+          <label className={`${sign.required ? "required" : ""}`}>
             {sign.label}
           </label>
           <div className="blood-pressure-inputs">
-            <input 
-              type="number" 
-              className="vital-input" 
+            <input
+              type="number"
+              className="vital-input"
               placeholder="Tâm thu"
               value={vitalSigns.bloodPressureSystolic}
-              onChange={(e) => handleVitalSignChange('bloodPressureSystolic', e.target.value)}
+              onChange={(e) =>
+                handleVitalSignChange("bloodPressureSystolic", e.target.value)
+              }
             />
             <span className="blood-pressure-separator">/</span>
-            <input 
-              type="number" 
-              className="vital-input" 
+            <input
+              type="number"
+              className="vital-input"
               placeholder="Tâm trương"
               value={vitalSigns.bloodPressureDiastolic}
-              onChange={(e) => handleVitalSignChange('bloodPressureDiastolic', e.target.value)}
+              onChange={(e) =>
+                handleVitalSignChange("bloodPressureDiastolic", e.target.value)
+              }
             />
             <span className="vital-unit">{sign.unit}</span>
           </div>
@@ -149,20 +185,22 @@ export default function MedicalExaminationPage() {
 
     return (
       <div key={index} className="vital-sign">
-        <label className={`${sign.required ? 'required' : ''}`}>
+        <label className={`${sign.required ? "required" : ""}`}>
           {sign.label}
         </label>
         <div className="vital-input-group">
-          <input 
-            type={sign.type || 'text'} 
+          <input
+            type={sign.type || "text"}
             step={sign.step}
-            className="vital-input" 
+            className="vital-input"
             placeholder={sign.label}
-            value={vitalSigns[sign.label.toLowerCase().replace(/\s/g, '')]}
-            onChange={(e) => handleVitalSignChange(
-              sign.label.toLowerCase().replace(/\s/g, ''), 
-              e.target.value
-            )}
+            value={vitalSigns[sign.label.toLowerCase().replace(/\s/g, "")]}
+            onChange={(e) =>
+              handleVitalSignChange(
+                sign.label.toLowerCase().replace(/\s/g, ""),
+                e.target.value
+              )
+            }
           />
           <span className="vital-unit">{sign.unit}</span>
         </div>
@@ -180,23 +218,29 @@ export default function MedicalExaminationPage() {
       clinicalExamination,
       diagnosis,
       selectedTests,
-      selectedMedications
+      selectedMedications,
     };
 
     // TODO: Implement actual save logic (e.g., API call)
-    console.log('Saving examination data:', examinationData);
-    alert('Đã lưu thông tin khám bệnh');
+    console.log("Saving examination data:", examinationData);
+    alert("Đã lưu thông tin khám bệnh");
   };
 
   return (
     <div className="container mx-auto px-4 py-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <a href="#" className="flex items-center gap-2 text-gray-700 hover:text-blue-600">
+        <a
+          href="#"
+          className="flex items-center gap-2 text-gray-700 hover:text-blue-600"
+        >
           <ChevronLeft size={16} />
           Phòng Khám SE100
         </a>
-        <a href="#" className="text-gray-700 hover:text-blue-600 flex items-center gap-1">
+        <a
+          href="#"
+          className="text-gray-700 hover:text-blue-600 flex items-center gap-1"
+        >
           <HelpCircle size={16} />
           Help
         </a>
@@ -205,26 +249,30 @@ export default function MedicalExaminationPage() {
       {/* Navigation Tabs */}
       <div className="flex gap-4 mb-6">
         {[
-          { label: 'Khám bệnh', active: true },
-          { 
-            label: 'Chỉ đỉnh CLS', 
-            active: false, 
-            onClick: () => setShowClsModal(true) 
+          { label: "Khám bệnh", active: true },
+          {
+            label: "Chỉ đỉnh CLS",
+            active: false,
+            onClick: () => setShowClsModal(true),
           },
-          { 
-            label: 'Đơn thuốc', 
-            active: false, 
-            onClick: () => setShowPrescriptionModal(true) 
+          {
+            label: "Đơn thuốc",
+            active: false,
+            onClick: () => setShowPrescriptionModal(true),
           },
-          { label: 'Hoàn thành', active: false, success: true }
+          { label: "Hoàn thành", active: false, success: true },
         ].map((tab, index) => (
-          <button 
-            key={index} 
+          <button
+            key={index}
             onClick={tab.onClick}
             className={`
               px-4 py-2 rounded-lg text-sm 
-              ${tab.active ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}
-              ${tab.success ? 'bg-green-600 text-white' : ''}
+              ${
+                tab.active
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-700"
+              }
+              ${tab.success ? "bg-green-600 text-white" : ""}
             `}
           >
             {tab.label}
@@ -243,18 +291,18 @@ export default function MedicalExaminationPage() {
               <label className="block text-sm text-gray-600 mb-2">
                 {
                   {
-                    name: 'Họ tên',
-                    gender: 'Giới tính',
-                    dob: 'Ngày sinh',
-                    phone: 'Số điện thoại',
-                    address: 'Địa chỉ'
+                    name: "Họ tên",
+                    gender: "Giới tính",
+                    dob: "Ngày sinh",
+                    phone: "Số điện thoại",
+                    address: "Địa chỉ",
                   }[key]
                 }
               </label>
-              <input 
-                type="text" 
-                value={value} 
-                readOnly 
+              <input
+                type="text"
+                value={value}
+                readOnly
                 className="w-full px-3 py-2 bg-gray-100 rounded-lg text-gray-800"
               />
             </div>
@@ -264,10 +312,8 @@ export default function MedicalExaminationPage() {
 
       {/* Vital Signs Section */}
       <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">
-          Chỉ số
-        </h2>
-        
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">Chỉ số</h2>
+
         {/* Vital Signs Grid */}
         <div className="grid grid-cols-3 gap-4 mb-6 bg-gray-100 rounded-lg p-4">
           {vitalSignsConfig.map(renderVitalSignInput)}
@@ -279,9 +325,9 @@ export default function MedicalExaminationPage() {
             <label className="block text-sm text-gray-600 mb-2 required">
               Lý do khám
             </label>
-            <textarea 
-              rows={3} 
-              placeholder="Nhập lý do khám" 
+            <textarea
+              rows={3}
+              placeholder="Nhập lý do khám"
               value={examinationReason}
               onChange={(e) => setExaminationReason(e.target.value)}
               className="w-full px-3 py-2 bg-gray-100 rounded-lg"
@@ -293,13 +339,13 @@ export default function MedicalExaminationPage() {
               Tiền sử bệnh
             </label> */}
             {/* <div className="border rounded-lg overflow-hidden"> */}
-              {/* <div className="bg-gray-100 p-2 flex gap-2">
+            {/* <div className="bg-gray-100 p-2 flex gap-2">
                 <button className="hover:bg-gray-200 p-1 rounded">B</button>
                 <button className="hover:bg-gray-200 p-1 rounded">I</button>
                 <button className="hover:bg-gray-200 p-1 rounded">U</button>
                 <button className="hover:bg-gray-200 p-1 rounded">List</button>
               </div> */}
-              {/* <textarea 
+            {/* <textarea 
                 rows={4} 
                 value={medicalHistory}
                 onChange={(e) => setMedicalHistory(e.target.value)}
@@ -313,11 +359,11 @@ export default function MedicalExaminationPage() {
             <label className="block text-sm text-gray-600 mb-2 required">
               Khám lâm sàng
             </label>
-            <textarea 
-              rows={4} 
+            <textarea
+              rows={4}
               value={clinicalExamination}
               onChange={(e) => setClinicalExamination(e.target.value)}
-              placeholder="Nhập kết quả khám lâm sàng" 
+              placeholder="Nhập kết quả khám lâm sàng"
               className="w-full px-3 py-2 bg-gray-100 rounded-lg"
             />
           </div>
@@ -326,11 +372,11 @@ export default function MedicalExaminationPage() {
             <label className="block text-sm text-gray-600 mb-2">
               Chẩn đoán
             </label>
-            <textarea 
-              rows={3} 
+            <textarea
+              rows={3}
               value={diagnosis}
               onChange={(e) => setDiagnosis(e.target.value)}
-              placeholder="Nhập chẩn đoán" 
+              placeholder="Nhập chẩn đoán"
               className="w-full px-3 py-2 bg-gray-100 rounded-lg"
             />
           </div>
@@ -338,11 +384,13 @@ export default function MedicalExaminationPage() {
           {/* Selected Tests Preview */}
           {selectedTests.length > 0 && (
             <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="text-lg font-semibold mb-3">Các xét nghiệm đã chọn</h3>
+              <h3 className="text-lg font-semibold mb-3">
+                Các xét nghiệm đã chọn
+              </h3>
               <div className="flex flex-wrap gap-2">
-                {selectedTests.map(test => (
-                  <span 
-                    key={test.id} 
+                {selectedTests.map((test) => (
+                  <span
+                    key={test.id}
                     className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm"
                   >
                     {test.name}
@@ -352,7 +400,7 @@ export default function MedicalExaminationPage() {
             </div>
           )}
 
-          <button 
+          <button
             onClick={handleSaveExamination}
             className="bg-blue-600 text-white px-6 py-3 rounded-lg float-right hover:bg-blue-700 transition"
           >
@@ -363,7 +411,7 @@ export default function MedicalExaminationPage() {
 
       {/* CLS Modal */}
       {showClsModal && (
-        <ClsModal 
+        <ClsModal
           onClose={() => setShowClsModal(false)}
           onSave={handleClsModalSave}
           patientName={patientInfo.name}
@@ -373,15 +421,15 @@ export default function MedicalExaminationPage() {
       )}
 
       {/* Prescription Modal */}
-        {showPrescriptionModal && (
-        <PrescriptionModal 
-            onClose={() => setShowPrescriptionModal(false)}
-            onSave={handlePrescriptionModalSave}
-            patientName={patientInfo.name}
-            patientDob={patientInfo.dob}
-            patientGender={patientInfo.gender}
+      {showPrescriptionModal && (
+        <PrescriptionModal
+          onClose={() => setShowPrescriptionModal(false)}
+          onSave={handlePrescriptionModalSave}
+          patientName={patientInfo.name}
+          patientDob={patientInfo.dob}
+          patientGender={patientInfo.gender}
         />
-        )}
+      )}
     </div>
   );
 }
