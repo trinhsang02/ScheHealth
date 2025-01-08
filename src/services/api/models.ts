@@ -68,7 +68,8 @@ export interface appointmentData {
   patient_reason: string;
   speciality_id: number;
   date: string;
-  status?: "pending" | "approved" | "cancelled";
+  status?: "paid" | "unpaid";
+  treatment_status?: "scheduled" | "in_progress" | "completed" | "cancelled";
   doctor_id?: number;
   doctor_name?: string;
 }
