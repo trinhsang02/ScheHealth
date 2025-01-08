@@ -171,3 +171,22 @@ export interface DoctorCreateForm {
   speciality_id: number;
   room_id?: number;
 }
+export interface Invoice {
+  id: number;
+  date: string;
+  medicalRecordId: string;
+  totalAmount: number;
+  services: Service[];
+}
+
+export interface InvoiceResponse {
+  id: number;
+  medical_record_id: number;
+  time: string;
+  total_price: number;
+  service_names: string[];
+  service_prices: number[];
+}
+
+
+

@@ -146,8 +146,10 @@ class AuthService {
         return "/doctor/";
       case "patient":
         return "/patient/homepage";
+      case "admin":
+        return "/admin/";
       default:
-        return "/login";
+        return "/";
     }
   }
 

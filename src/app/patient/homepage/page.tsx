@@ -4,10 +4,13 @@ import Image from 'next/image';
 import hospitalImage from '../../../assets/hospital-image.png';
 import ServiceSelectionModal from '../ServiceSelectionModal';
 import AppointmentFormModal from '../AppointmentFormModal';
+import { InvoiceModal } from '@/components/invoice/invoice-modal';
+import { Button } from '@/components/ui/button';
 
 export default function MainViewPatient() {
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [showAppointmentModal, setShowAppointmentModal] = useState(false);
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 
   const handleBookingClick = () => {
     setShowServiceModal(true);
@@ -16,6 +19,10 @@ export default function MainViewPatient() {
   const handleServiceSelect = () => {
     setShowServiceModal(false);
     setShowAppointmentModal(true);
+  };
+  
+  const handleInvoiceLookup = () => {
+    setShowInvoiceModal(true);
   };
 
   return (
@@ -34,7 +41,7 @@ export default function MainViewPatient() {
         <div className="flex justify-center gap-4">
           <QuickActionButton text="Hỗ trợ đặt khám" />
           <QuickActionButton text="Lịch sử thanh toán" />
-          <QuickActionButton text="Tra cứu hóa đơn" />
+          <Button variant="link" onClick={handleInvoiceLookup}>Tra cứu hóa đơn</Button>
           <QuickActionButton text="Tra cứu kết quả khám bệnh" />
         </div>
 
@@ -62,19 +69,27 @@ export default function MainViewPatient() {
         open={showAppointmentModal}
         onOpenChange={setShowAppointmentModal}
       />
+      
+      <InvoiceModal 
+        open={showInvoiceModal} 
+        onOpenChange={setShowInvoiceModal} 
+      />
     </div>
   );
 }
 
 function QuickActionButton({ 
   text,
-  active = false 
+  active = false,
+  onClick 
 }: {
   text: string;
   active?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <button 
+      onClick={onClick}
       className={`px-4 py-2 text-sm ${
         active 
           ? 'border-b-2 border-[#00B074] text-[#00B074]' 

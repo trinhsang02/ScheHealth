@@ -14,55 +14,44 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { fetchAppointmentHistory } from "@/services/api/appointmentService";
 import { AppointmentHistoryResponse } from "@/services/api/models";
+import { updateAppointmentStatus } from "@/services/api/appointmentService";
+
 
 interface BookingHistory {
-  id: string;
+  id: number;
   date: string;
   specialty: string;
   status: "completed" | "waiting";
 }
 
-const bookings: BookingHistory[] = [
-  {
-    id: "1",
-    date: "20/11/2024",
-    specialty: "Nội tổng quát",
-    status: "completed",
-  },
-  {
-    id: "1",
-    date: "15/11/2024",
-    specialty: "Tim mạch",
-    status: "completed",
-  },
-  {
-    id: "1",
-    date: "05/11/2024",
-    specialty: "Da liễu",
-    status: "completed",
-  },
-  {
-    id: "1",
-    date: "28/10/2024",
-    specialty: "Răng hàm mặt",
-    status: "completed",
-  },
-  {
-    id: "1",
-    date: "04/01/2025",
-    specialty: "Tim mạch",
-    status: "waiting",
-  },
-];
-
-const handlePayment = (bookingId: string) => {
-  // Add logic
-  console.log("Processing payment for booking:", bookingId);
-};
 
 const BookingHistory: React.FC = () => {
   const [records, setRecords] = useState<AppointmentHistoryResponse[]>([]);
   const [specialities, setSpecialities] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handlePayment = (bookingId: number) => {
+    setIsLoading(true);
+    try {
+      window.open("https://buy.stripe.com/test_bIY9BF3ew9gV676dQS", "_blank")
+  
+      // Gọi API để cập nhật trạng thái
+      const response = updateAppointmentStatus(bookingId);
+      console.log("Appointment status updated:", response);
+  
+      
+      setRecords((prevRecords) =>
+        prevRecords.map((record) =>
+          record.id === bookingId ? { ...record, status: "Paid" } : record
+        )
+      );
+  
+      alert("Cập nhật trạng thái thành công!");
+    } catch (error) {
+      console.error("Error updating appointment status:", error);
+      alert("Đã xảy ra lỗi khi cập nhật trạng thái.");
+    }
+  };
 
   useEffect(() => {
     const fetchSpecialities = async () => {
@@ -91,7 +80,7 @@ const BookingHistory: React.FC = () => {
               <TableHead className="font-medium">Giờ dự kiến</TableHead>
               <TableHead className="font-medium">Chuyên khoa</TableHead>
               <TableHead className="font-medium">
-                Trạng thái thanh toán
+                Trạng thái 
               </TableHead>
               <TableHead className="font-medium text-center">
                 Thao tác
@@ -122,7 +111,7 @@ const BookingHistory: React.FC = () => {
                 </TableCell>
                 <TableCell className="text-center">
                   <button
-                    onClick={() => handlePayment(record.id.toString())}
+                    onClick={() => handlePayment(record.id)}
                     disabled={record.status === "Paid"}
                     className={`inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 ${
                       record.status === "Paid"
