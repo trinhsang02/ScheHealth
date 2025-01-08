@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { appointmentData } from '../../../services/api/models';
-import { fetchAppointmentBySpecialityID, updateAppointmentStatus } from '../../../services/api/appointmentService';
+import { fetchAppointmentBySpecialityID, updateAppointmentTreatmentStatus } from '../../../services/api/appointmentService';
 import authService from '../../../services/api/authService';
 
 export default function AppointmentsPage() {
@@ -45,8 +45,8 @@ export default function AppointmentsPage() {
       }
       
       // Only update status if the appointment is 'scheduled'
-      if (appointment.status?.toLowerCase() === 'scheduled') {
-        const response = await updateAppointmentStatus(appointment.id, 'in progress');
+      if (appointment.treatment_status?.toLowerCase() === 'scheduled') {
+        const response = await updateAppointmentTreatmentStatus(appointment.id, 'in_progress');
         
         if (!response.success) {
           setError(response.message);
@@ -63,12 +63,12 @@ export default function AppointmentsPage() {
     }
   };
 
-  const getStatusClass = (status: string) => {
+  const getTreatmentStatusClass = (status: string) => {
     const baseClass = "px-3 py-1.5 rounded-full text-sm font-medium inline-block";
     switch (status.toLowerCase()) {
       case 'scheduled':
         return `${baseClass} bg-amber-50 text-amber-600`;
-      case 'in progress':
+      case 'in_progress':
         return `${baseClass} bg-blue-50 text-blue-600`;
       case 'completed':
         return `${baseClass} bg-green-50 text-green-600`;
@@ -79,11 +79,11 @@ export default function AppointmentsPage() {
     }
   };
 
-  const getStatusText = (status: string) => {
+  const getTreatmentStatusText = (status: string) => {
     switch (status.toLowerCase()) {
       case 'scheduled':
         return 'Chờ khám';
-      case 'in progress':
+      case 'in_progress':
         return 'Đang khám';
       case 'completed':
         return 'Đã khám';
@@ -146,26 +146,26 @@ export default function AppointmentsPage() {
                     <td className="px-4 py-3">{appointment.date}</td>
                     <td className="px-4 py-3">{appointment.patient_reason}</td>
                     <td className="px-4 py-3">
-                      <span className={getStatusClass(appointment.status || 'scheduled')}>
-                        {getStatusText(appointment.status || 'scheduled')}
+                      <span className={getTreatmentStatusClass(appointment.treatment_status || 'scheduled')}>
+                        {getTreatmentStatusText(appointment.treatment_status || 'scheduled')}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <button
                           className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium ${
-                            appointment.status?.toLowerCase() === 'scheduled' || appointment.status?.toLowerCase() === 'in progress'
+                            appointment.treatment_status?.toLowerCase() === 'scheduled' || appointment.treatment_status?.toLowerCase() === 'in_progress'
                               ? 'bg-blue-500 text-white hover:bg-blue-600'
                               : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                           }`}
-                          disabled={!['scheduled', 'in progress'].includes(appointment.status?.toLowerCase() || '')}
+                          disabled={!['scheduled', 'in_progress'].includes(appointment.treatment_status?.toLowerCase() || '')}
                           onClick={() => handleStartTreatment(appointment)}
                         >
                           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M18 8L22 12L18 16"/>
                             <path d="M2 12H22"/>
                           </svg>
-                          {appointment.status?.toLowerCase() === 'in progress' ? 'Tiếp tục' : 'Gọi khám'}
+                          {appointment.treatment_status?.toLowerCase() === 'in_progress' ? 'Tiếp tục' : 'Gọi khám'}
                         </button>
                       </div>
                     </td>

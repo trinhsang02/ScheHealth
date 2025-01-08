@@ -5,6 +5,7 @@ import { ChevronLeft, HelpCircle } from 'lucide-react';
 import ClsModal from "../ClsModal";
 import PrescriptionModal from '../Prescription';
 import { Medicine } from '../../../services/api/models';
+import { getPatientProfile } from '@/services/api/patientService';
 
 
 interface VitalSign {
@@ -54,7 +55,6 @@ export default function MedicalExaminationPage() {
     gender: 'Nam',
     dob: '01/01/1990',
     phone: '0123456789',
-    identityCard: '001234567890',
     address: 'Hà Nội'
   };
 
@@ -247,7 +247,6 @@ export default function MedicalExaminationPage() {
                     gender: 'Giới tính',
                     dob: 'Ngày sinh',
                     phone: 'Số điện thoại',
-                    identityCard: 'CMND/CCCD',
                     address: 'Địa chỉ'
                   }[key]
                 }

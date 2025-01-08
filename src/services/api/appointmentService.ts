@@ -70,20 +70,27 @@ export const updateAppointmentStatus = async (id: number) => {
   }
 };
 
-export const fetchAppointmentHistory = async () => {
+export const updateAppointmentTreatmentStatus = async (id: number, treatmentStatus: string) => {
   try {
-    const response = await apiClient.get("/appointment/history/self");
-    return response.data.data;
-  } catch (error: any) {
-    console.error("Failed to fetch appointment history:", error);
-    throw error;
-  }
-};
+    const token = authService.getToken();
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
 
-export const fetchMedicalRecord = async () => {
-  try {
-    const response = await apiClient.get("/medical-record/self");
-    return response.data.data;
+    const response: AxiosResponse = await apiClient.put(
+      `/appointment/treatment-status/${id}`,
+      {
+        treatment_status: treatmentStatus
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    return response.data;
   } catch (error: any) {
     throw error;
   }
