@@ -9,7 +9,7 @@ import {
 } from "../../../services/api/appointmentService";
 import authService from "../../../services/api/authService";
 
-export default function AppointmentsPage() {
+export default function PatientList() {
   const [appointments, setAppointments] = useState<appointmentData[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,11 @@ export default function AppointmentsPage() {
         userData.speciality_id
       );
       if (response.success) {
-        setAppointments(response.data);
+        // Lọc ra các appointments không có status unpaid
+        const filteredAppointments = response.data.filter(
+          (appointment: appointmentData) => appointment.status?.toLowerCase() !== "unpaid"
+        );
+        setAppointments(filteredAppointments);
       } else {
         setError(response.message);
       }
@@ -49,7 +53,7 @@ export default function AppointmentsPage() {
         throw new Error("Không tìm thấy ID cuộc hẹn");
       }
 
-      // Only update status if the appointment is 'scheduled'
+      // Chỉ cập nhật trạng thái nếu là 'scheduled'
       if (appointment.treatment_status?.toLowerCase() === "scheduled") {
         const response = await updateAppointmentTreatmentStatus(
           appointment.id,
@@ -64,14 +68,14 @@ export default function AppointmentsPage() {
         await fetchAppointments();
       }
 
-      // Navigate to treatment page
+      // Chuyển hướng đến trang điều trị
       router.push(`/doctor/treatment?patientId=${appointment.patient_id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Không thể bắt đầu khám");
     }
   };
 
-  const getTreatmentStatusClass = (status: string) => {
+  const getTreatmentStatusClass = (status: string): string => {
     const baseClass =
       "px-3 py-1.5 rounded-full text-sm font-medium inline-block";
     switch (status.toLowerCase()) {
@@ -88,7 +92,7 @@ export default function AppointmentsPage() {
     }
   };
 
-  const getTreatmentStatusText = (status: string) => {
+  const getTreatmentStatusText = (status: string): string => {
     switch (status.toLowerCase()) {
       case "scheduled":
         return "Chờ khám";
@@ -103,7 +107,7 @@ export default function AppointmentsPage() {
     }
   };
 
-  // Calculate pagination
+  // Tính toán phân trang
   const totalPages = Math.ceil(appointments.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -164,7 +168,7 @@ export default function AppointmentsPage() {
                 </tr>
               </thead>
               <tbody>
-                {currentAppointments.map((appointment, index) => (
+                {currentAppointments.map((appointment: appointmentData, index: number) => (
                   <tr
                     key={appointment.id}
                     className="border-t border-gray-100 hover:bg-gray-50"
@@ -243,7 +247,7 @@ export default function AppointmentsPage() {
               >
                 Trước
               </button>
-              {[...Array(totalPages)].map((_, index) => (
+              {[...Array(totalPages)].map((_, index: number) => (
                 <button
                   key={index + 1}
                   className={`px-3 py-1.5 border rounded-lg text-sm ${
