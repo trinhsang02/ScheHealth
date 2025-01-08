@@ -17,10 +17,8 @@ const geistMono = localFont({
 
 export default function RootLayout({
   children,
-  role,
 }: Readonly<{
   children: React.ReactNode;
-  role: string;
 }>) {
   const [hasToken, setHasToken] = useState(false);
 
@@ -35,7 +33,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning={true}
       >
-        <header>{hasToken && <NavMenu role={role} />}</header>
+        <header>{hasToken && <NavMenu />}</header>
         <main className="flex-1 overflow-auto">{children}</main>
       </body>
     </html>
