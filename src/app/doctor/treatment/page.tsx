@@ -73,13 +73,13 @@ export default function MedicalExaminationPage() {
         try {
           const patientData = await getPatientById(Number(patientId));
           console.log(patientData);
-          // setPatientInfo({
-          //   name: patientData.name,
-          //   gender: patientData.gender,
-          //   dob: patientData.dob,
-          //   phone: patientData.phone,
-          //   address: patientData.address,
-          // });
+          setPatientInfo({
+            name: patientData.name,
+            gender: patientData.gender.toString() === "1" ? "Nam" : "Nữ",
+            dob: patientData.birthday,
+            phone: patientData.phone,
+            address: patientData.address,
+          });
         } catch (error) {
           console.error("Error loading patient data:", error);
           // Handle error appropriately

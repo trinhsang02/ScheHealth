@@ -45,12 +45,13 @@ export const updatePatientProfile = async (
 
 export const getPatientById = async (id: number): Promise<PatientProfile> => {
   try {
-    console.log("id", id);
     const response = await apiClient.get(`/patient/${id}`);
-    console.log(response.data);
-    return response.data;
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || "Failed to fetch profile");
   } catch (error) {
-    console.error("Failed to fetch patient:", error);
-    throw new Error("Unable to fetch patient. Please try again later.");
+    console.error("Failed to fetch patient profile:", error);
+    throw new Error("Unable to fetch patient profile. Please try again later.");
   }
 };
