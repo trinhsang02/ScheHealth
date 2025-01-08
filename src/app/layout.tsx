@@ -32,15 +32,15 @@ export default function RootLayout({
   const [hasToken, setHasToken] = useState(false);
   const [role, setRole] = useState<string | null>(null);
 
-  useEffect(() => {
-    const token = sessionStorage.getItem("accessToken");
-    setHasToken(!!token);
+  // useEffect(() => {
+  //   const token = sessionStorage.getItem("accessToken");
+  //   setHasToken(!!token);
 
-    if (token) {
-      // Fetch the role using the authService
-      authService.getRole(token).then(setRole).catch(() => setRole(null));
-    }
-  }, []);
+  //   if (token) {
+  //     // Fetch the role using the authService
+  //     authService.getRole(token).then(setRole).catch(() => setRole(null));
+  //   }
+  // }, []);
 
   return (
     <html lang="en">

@@ -28,7 +28,7 @@ export interface LoginResponse {
   success: boolean;
   message: string;
   data: TokenData | null;
-  user_data: UserData | null; 
+  user_data: UserData | null;
 }
 
 export interface RegisterRequest {
@@ -159,19 +159,17 @@ export interface Doctor {
   avatar?: string;
   speciality_id: number;
   room_id?: number;
-  speciality?: string;  // Tên chuyên khoa - có thể được join từ bảng specialty
+  speciality?: string; // Tên chuyên khoa - có thể được join từ bảng specialty
 }
 
 export interface DoctorCreateForm {
   email: string;
-  phone: string;
+  password: string;
   name: string;
-  description?: string;
   role: string;
-  avatar?: string;
   speciality_id: number;
-  room_id?: number;
 }
+
 export interface Invoice {
   id: number;
   date: string;
@@ -188,6 +186,3 @@ export interface InvoiceResponse {
   service_names: string[];
   service_prices: number[];
 }
-
-
-
