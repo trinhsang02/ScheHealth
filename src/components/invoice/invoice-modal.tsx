@@ -39,9 +39,9 @@ export function InvoiceModal({ open, onOpenChange }: { open: boolean; onOpenChan
     }
   }, [open])
 
-  if (loading) {
-    return <div>Loading...</div>
-  }
+  // if (loading) {
+  //   return <div>Loading...</div>
+  // }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

@@ -122,11 +122,11 @@ export interface MedicineCreateForm {
   name: string;
   description?: string;
   price?: number;
-  unit: string;
-  manufacture_date: string;
-  expiry_date: string;
-  side_effects: string;
-  dosage: string;
+  unit?: string;
+  manufacture_date?: string;
+  expiry_date?: string;
+  side_effects?: string;
+  dosage?: string;
 }
 
 export interface AppointmentHistoryResponse {

@@ -92,11 +92,6 @@ const data = {
       icon: CalendarCheck,
     },
     {
-      name: "Quản lý ca khám",
-      url: "#",
-      icon: List,
-    },
-    {
       name: "Cài đặt",
       url: "/doctor/setting",
       icon: Settings,

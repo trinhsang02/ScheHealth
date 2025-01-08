@@ -11,7 +11,7 @@ export const AddSpecialtyModal = ({ isOpen, onClose, onSave }: { isOpen: boolean
     if (name.trim() && count) {
       onSave({ name, count: Number(count) });
       onClose(); 
-    
+
     }
   };
 

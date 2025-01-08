@@ -9,10 +9,8 @@ import {
     Settings,
     LogOut,
     Hospital,
-    User,
-    CalendarCheck,
-    List,
     Briefcase,
+    Pill,
 } from "lucide-react"
 
 import { NavSystem } from "@/components/nav-System"
@@ -32,8 +30,8 @@ import {
 // This is sample data.
 const data = {
     user: {
-        name: "Admin Nguyễn Văn A",
-        email: "Dr.ANguyen@example.com",
+        name: "Admin",
+        email: "Admin1@gmail.com",
         avatar: "/avatars/shadcn.jpg",
     },
     dashboard: [
@@ -46,7 +44,7 @@ const data = {
     admin: [
         {
             name: "Dashboard",
-            url: "#",
+            url: "/admin/homepage",
             icon: HomeIcon,
         },
         {
@@ -63,6 +61,11 @@ const data = {
             name: "Dịch vụ",
             url: "/admin/medicalService",
             icon: Briefcase,
+        },
+        {
+            name: "Thuốc",
+            url: "/admin/medicine",
+            icon: Pill,
         },
         {
             name: "Cài đặt",

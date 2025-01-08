@@ -18,29 +18,45 @@ import {
 import { Input } from "@/components/ui/input";
 import { MoreVertical, Plus, Search } from "lucide-react";
 import { AddSpecialtyModal } from "../../doctor/AddSpecialtyModal";
+import { fetchSpecialities } from "../../../services/api/specialtyService"
 import React from "react";
 
-// Sample data - replace with actual data from your backend
-const initialSpecialties = [
-  { id: 1, name: "Da liễu", count: 12 },
-  { id: 2, name: "Tim mạch", count: 12 },
-  { id: 3, name: "Nội", count: 12 },
-  { id: 4, name: "Ngoại", count: 12 },
-  { id: 5, name: "Da liễu", count: 12 },
-  { id: 6, name: "Da liễu", count: 12 },
-  { id: 7, name: "Da liễu", count: 12 },
-];
+type Speciality = {
+  id: number;
+  name: string;
+  description: string;
+};
 
 const SpecialtiesPage = () => {
-
-  const [specialties, setSpecialties] = React.useState(initialSpecialties);
+  const [specialties, setSpecialties] = React.useState<Speciality[]>([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  // Fetch data from API
+  React.useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const data = await fetchSpecialities();
+        console.log(data);
+        setSpecialties(data);
+      } catch (err) {
+        setError("Lỗi khi tải dữ liệu chuyên khoa.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleAddSpecialty = (data: { name: string; count: number }) => {
-    setSpecialties((prev) => [
-      ...prev,
-      { id: prev.length + 1, name: data.name, count: data.count },
-    ]);
+    // setSpecialties((prev) => [
+    //   ...prev,
+    //   { id: prev.length + 1, name: data.name, count: data.count },
+    // ]);
   };
 
   return (
@@ -66,57 +82,60 @@ const SpecialtiesPage = () => {
           </div>
         </div>
 
+        {/* Loading State */}
+        {isLoading && <p>Đang tải dữ liệu...</p>}
+
+        {/* Error State */}
+        {error && <p className="text-red-500">{error}</p>}
+
         {/* Table */}
-        <div className="rounded-md border bg-white">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[80px]">STT</TableHead>
-                <TableHead className="w-[10px]">Chuyên khoa</TableHead>
-                <TableHead className="w-[450px] text-center">
-                  Số lượng bác sĩ
-                </TableHead>
-                <TableHead className="w-[100px] text-center">Thao tác</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {specialties.map((specialty, index) => (
-                <TableRow key={specialty.id}>
-                  <TableCell className="font-medium">
-                    {index + 1}
-                  </TableCell>
-                  <TableCell>{specialty.name}</TableCell>
-                  <TableCell className="text-center">
-                    {specialty.count}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex justify-center">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            className="h-8 w-8 p-0"
-                          >
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
-                            Chỉnh sửa
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive">
-                            Xóa
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </TableCell>
+        {!isLoading && !error && specialties.length > 0 && (
+          <div className="rounded-md border bg-white">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[80px]">STT</TableHead>
+                  <TableHead className="w-[10px]">Chuyên khoa</TableHead>
+                  <TableHead className="w-[450px] text-left">Mô tả</TableHead>
+                  <TableHead className="w-[100px] text-center">Thao tác</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {specialties.map((specialty, index) => (
+                  <TableRow key={specialty.id}>
+                    <TableCell className="font-medium">{index + 1}</TableCell>
+                    <TableCell>{specialty.name}</TableCell>
+                    <TableCell className="text-left">{specialty.description}</TableCell>
+                    <TableCell>
+                      <div className="flex justify-center">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive">
+                              Xóa
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && specialties.length === 0 && (
+          <p className="text-center">Không có dữ liệu chuyên khoa.</p>
+        )}
       </div>
+
       {/* Modal for Adding Specialty */}
       <AddSpecialtyModal
         isOpen={isModalOpen}
@@ -125,6 +144,6 @@ const SpecialtiesPage = () => {
       />
     </div>
   );
-}
+};
 
 export default SpecialtiesPage;

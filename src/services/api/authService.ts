@@ -61,11 +61,11 @@ class AuthService {
       const response = await apiClient.get(`/role/${email}`);
       return response.data;
     } catch (error: any) {
-      console.error("Get role error:", {
-        message: error.message,
-        status: error?.response?.status,
-        data: error?.response?.data,
-      });
+      // console.error("Get role error:", {
+      //   message: error.message,
+      //   status: error?.response?.status,
+      //   data: error?.response?.data,
+      // });
       throw new Error(
         error?.response?.data?.message || "Lỗi hệ thống, vui lòng thử lại sau"
       );

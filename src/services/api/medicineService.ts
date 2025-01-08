@@ -16,6 +16,7 @@ export const createMedicine = async (medicineData: MedicineCreateForm) => {
         const response = await apiClient.post('/medicine', medicineData);
         return response.data;
     } catch (error: any){
+        console.error('Error creating medicine:', error);
         throw error;
     }
 }
