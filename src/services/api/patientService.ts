@@ -21,6 +21,7 @@ export const updatePatientProfile = async (
     const data = {
       name: updateData.name,
       phone: updateData.phone,
+      email: updateData.email,
       birthday: updateData.birthday,
       gender: updateData.gender === "male" ? 0 : 1,
       address: updateData.address,

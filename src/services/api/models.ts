@@ -146,3 +146,28 @@ export interface MedicalRecord {
   doctor_name: string;
   payment_status: number;
 }
+
+//Admin models
+export interface Doctor {
+  id: number;
+  email: string;
+  phone: string;
+  name: string;
+  description?: string;
+  role: string;
+  avatar?: string;
+  speciality_id: number;
+  room_id?: number;
+  speciality?: string;  // Tên chuyên khoa - có thể được join từ bảng specialty
+}
+
+export interface DoctorCreateForm {
+  email: string;
+  phone: string;
+  name: string;
+  description?: string;
+  role: string;
+  avatar?: string;
+  speciality_id: number;
+  room_id?: number;
+}

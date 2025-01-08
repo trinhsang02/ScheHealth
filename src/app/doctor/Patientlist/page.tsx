@@ -40,18 +40,24 @@ export default function AppointmentsPage() {
 
   const handleStartTreatment = async (appointment: appointmentData) => {
     try {
-      // Update status to "in progress"
-      const response = await updateAppointmentStatus(appointment.id!, 'in progress');
-      
-      if (response.success) {
-        // Refresh appointments list
-        await fetchAppointments();
-        
-        // Navigate to treatment page
-        router.push(`/doctor/treatment?patientId=${appointment.patient_id}`);
-      } else {
-        setError(response.message);
+      if (!appointment.id) {
+        throw new Error('Không tìm thấy ID cuộc hẹn');
       }
+      
+      // Only update status if the appointment is 'scheduled'
+      if (appointment.status?.toLowerCase() === 'scheduled') {
+        const response = await updateAppointmentStatus(appointment.id, 'in progress');
+        
+        if (!response.success) {
+          setError(response.message);
+          return;
+        }
+        
+        await fetchAppointments();
+      }
+      
+      // Navigate to treatment page
+      router.push(`/doctor/treatment?patientId=${appointment.patient_id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Không thể bắt đầu khám');
     }
@@ -148,18 +154,18 @@ export default function AppointmentsPage() {
                       <div className="flex items-center gap-2">
                         <button
                           className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium ${
-                            appointment.status?.toLowerCase() === 'scheduled'
+                            appointment.status?.toLowerCase() === 'scheduled' || appointment.status?.toLowerCase() === 'in progress'
                               ? 'bg-blue-500 text-white hover:bg-blue-600'
                               : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                           }`}
-                          disabled={appointment.status?.toLowerCase() !== 'scheduled'}
+                          disabled={!['scheduled', 'in progress'].includes(appointment.status?.toLowerCase() || '')}
                           onClick={() => handleStartTreatment(appointment)}
                         >
                           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M18 8L22 12L18 16"/>
                             <path d="M2 12H22"/>
                           </svg>
-                          Gọi khám
+                          {appointment.status?.toLowerCase() === 'in progress' ? 'Tiếp tục' : 'Gọi khám'}
                         </button>
                       </div>
                     </td>

@@ -56,13 +56,8 @@ const data = {
         },
         {
             name: "Bác sĩ",
-            url: "#",
+            url: "/admin/doctor",
             icon: PieChart,
-        },
-        {
-            name: "Bệnh nhân",
-            url: "#",
-            icon: User,
         },
         {
             name: "Dịch vụ",
