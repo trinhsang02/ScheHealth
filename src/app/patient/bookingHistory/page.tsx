@@ -101,18 +101,18 @@ const BookingHistory: React.FC = () => {
                 <TableCell>
                   <Badge
                     className={
-                      record.status === "Paid"
+                      record.status === "paid"
                         ? "bg-green-50 text-green-700 border border-green-200 hover:bg-green-50"
                         : "bg-yellow-50 text-yellow-700 border border-yellow-200 hover:bg-yellow-50"
                     }
                   >
-                    {record.status === "Paid" ? "Hoàn thành" : "Chờ thanh toán"}
+                    {record.status === "paid" ? "Hoàn thành" : "Chờ thanh toán"}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-center">
                   <button
                     onClick={() => handlePayment(record.id)}
-                    disabled={record.status === "Paid"}
+                    disabled={record.status === "paid"}
                     className={`inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 ${
                       record.status === "Paid"
                         ? "bg-gray-100 text-gray-400 cursor-not-allowed"

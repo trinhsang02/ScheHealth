@@ -1,10 +1,11 @@
 'use client'
 
+import ReactToPrint, { useReactToPrint } from "react-to-print"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useState, useEffect } from "react"
-import {InvoiceResponse} from "../../services/api/models"
+import { useState, useEffect, useRef, ReactElement, RefObject } from "react"
+import { InvoiceResponse } from "../../services/api/models"
 import invoiceService from "@/services/api/paymentService"
 
 interface Invoice 
@@ -60,15 +61,23 @@ export function InvoiceModal({ open, onOpenChange }: { open: boolean; onOpenChan
 }
 
 function InvoiceDetail({ invoice, onBack }: { invoice: Invoice; onBack: () => void }) {
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const printHtml = useReactToPrint({ contentRef });
+
   return (
-    <div className="space-y-4">
+    <div ref={contentRef} className="space-y-4 @media print: p-4">
+      {/* Addition print content */}
+      <div className="bold text-center hidden @media print:block">
+        <b>Hóa đơn dịch vụ</b>
+      </div>
       <div className="flex justify-between items-center">
         <div>
           <p><strong>Ngày:</strong> {new Date(invoice.time).toLocaleDateString('vi-VN')}</p>
           <p><strong>Mã Hồ Sơ Bệnh Án:</strong> {invoice.medical_record_id}</p>
           <p><strong>Tổng Giá:</strong> {invoice.total_price.toLocaleString('vi-VN')} VND</p>
         </div>
-        <Button variant="outline" onClick={onBack}>Quay Lại</Button>
+        <Button className="block @media print:hidden" variant="outline" onClick={onBack}>Quay Lại</Button>
       </div>
       <Table>
         <TableHeader>
@@ -86,8 +95,41 @@ function InvoiceDetail({ invoice, onBack }: { invoice: Invoice; onBack: () => vo
           ))}
         </TableBody>
       </Table>
+      <div className="float-end">
+        <Button className="block @media print:hidden" variant="secondary" onClick={() => printHtml()}>In</Button>
+      </div>
     </div>
   )
+}
+
+function InvoicePrintDetail({ invoice, ref }: { invoice: Invoice, ref: any }) {
+  return (
+    <div ref={ref} className="space-y-4 hidden">
+    <div className="flex justify-between items-center">
+      <div>
+        <p><strong>Ngày:</strong> {new Date(invoice.time).toLocaleDateString('vi-VN')}</p>
+        <p><strong>Mã Hồ Sơ Bệnh Án:</strong> {invoice.medical_record_id}</p>
+        <p><strong>Tổng Giá:</strong> {invoice.total_price.toLocaleString('vi-VN')} VND</p>
+      </div>
+    </div>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Dịch Vụ</TableHead>
+          <TableHead>Giá</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {invoice.service_names.map((name, index) => (
+          <TableRow key={index}>
+            <TableCell>{name}</TableCell>
+            <TableCell>{invoice.service_prices[index].toLocaleString('vi-VN')} VND</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </div>
+  );
 }
 
 function InvoiceList({ onSelectInvoice, invoices }: { onSelectInvoice: (invoice: Invoice) => void; invoices: Invoice[] }) {
