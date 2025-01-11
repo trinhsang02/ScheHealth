@@ -7,6 +7,7 @@ import {
   fetchAppointmentBySpecialityID,
   updateAppointmentTreatmentStatus,
 } from "../../../services/api/appointmentService";
+import { createMedicalRecord, fetchExistingMedicalRecord} from "../../../services/api/medicalRecordService";
 import authService from "../../../services/api/authService";
 
 export default function PatientList() {
@@ -32,9 +33,17 @@ export default function PatientList() {
         userData.speciality_id
       );
       if (response.success) {
-        // Lọc ra các appointments không có status unpaid
+        // Lấy ngày hiện tại
+        const today = new Date();
+        const todayString = today.toISOString().split('T')[0];
+
+        // Lọc ra các appointments:
+        // 1. Không có status unpaid
+        // 2. Có ngày khám là ngày hôm nay
         const filteredAppointments = response.data.filter(
-          (appointment: appointmentData) => appointment.status?.toLowerCase() !== "unpaid"
+          (appointment: appointmentData) => 
+            appointment.status !== "unpaid" &&
+            appointment.date.split('T')[0] === todayString
         );
         setAppointments(filteredAppointments);
       } else {
@@ -47,10 +56,27 @@ export default function PatientList() {
     }
   };
 
+
   const handleStartTreatment = async (appointment: appointmentData) => {
     try {
       if (!appointment.id) {
         throw new Error("Không tìm thấy ID cuộc hẹn");
+      }
+
+      // Lấy thông tin người dùng từ localStorage
+      const userData = authService.getUserData();
+      if (!userData) {
+        throw new Error("Không tìm thấy thông tin người dùng");
+      }
+
+      if (appointment.treatment_status?.toLowerCase() === "in_progress") {
+        const existingMedicalRecord = await fetchExistingMedicalRecord(appointment.id);
+        if (existingMedicalRecord) {
+          sessionStorage.setItem(
+            'currentMedicalRecord',
+            JSON.stringify(existingMedicalRecord)
+          );
+        }
       }
 
       // Chỉ cập nhật trạng thái nếu là 'scheduled'
@@ -64,6 +90,30 @@ export default function PatientList() {
           setError(response.message);
           return;
         }
+
+        // Tạo medical record mới
+        const medicalRecordData = {
+          appointment_id: appointment.id,
+          patient_id: appointment.patient_id,
+          doctor_id: userData.id,
+          payment_status: 0, // Chưa thanh toán
+        };
+
+        const medicalRecordResponse = await createMedicalRecord(medicalRecordData);
+
+        if (!medicalRecordResponse.success) {
+          setError("Không thể tạo hồ sơ khám bệnh");
+          return;
+        }
+
+        // Save medical record to sessionStorage
+        sessionStorage.setItem(
+          'currentMedicalRecord',
+          JSON.stringify({
+            id: medicalRecordResponse.data.id,
+            ...medicalRecordData
+          })
+        );
 
         await fetchAppointments();
       }
