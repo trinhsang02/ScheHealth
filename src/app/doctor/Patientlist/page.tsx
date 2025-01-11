@@ -33,9 +33,17 @@ export default function PatientList() {
         userData.speciality_id
       );
       if (response.success) {
-        // Lọc ra các appointments không có status unpaid
+        // Lấy ngày hiện tại
+        const today = new Date();
+        const todayString = today.toISOString().split('T')[0];
+
+        // Lọc ra các appointments:
+        // 1. Không có status unpaid
+        // 2. Có ngày khám là ngày hôm nay
         const filteredAppointments = response.data.filter(
-          (appointment: appointmentData) => appointment.status?.toLowerCase() !== "unpaid"
+          (appointment: appointmentData) => 
+            appointment.status !== "unpaid" &&
+            appointment.date.split('T')[0] === todayString
         );
         setAppointments(filteredAppointments);
       } else {
@@ -47,6 +55,7 @@ export default function PatientList() {
       setLoading(false);
     }
   };
+
 
   const handleStartTreatment = async (appointment: appointmentData) => {
     try {
