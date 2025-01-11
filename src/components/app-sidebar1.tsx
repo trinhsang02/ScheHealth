@@ -68,11 +68,6 @@ const data = {
             icon: Pill,
         },
         {
-            name: "Cài đặt",
-            url: "/doctor/setting",
-            icon: Settings,
-        },
-        {
             name: "Đăng xuất",
             url: "/",
             icon: LogOut,

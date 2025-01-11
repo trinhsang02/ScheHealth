@@ -40,9 +40,7 @@ export default function MainViewPatient() {
 
         <div className="flex justify-center gap-4">
           <QuickActionButton text="Hỗ trợ đặt khám" />
-          <QuickActionButton text="Lịch sử thanh toán" />
           <Button variant="link" onClick={handleInvoiceLookup}>Tra cứu hóa đơn</Button>
-          <QuickActionButton text="Tra cứu kết quả khám bệnh" />
         </div>
 
         <div className="mt-6 flex justify-center">

@@ -1,13 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import {
-  Printer,
-  Search,
-  XCircle,
-  X
-} from 'lucide-react';
+import { Printer, Search, XCircle, X} from 'lucide-react';
 import { fectchAllServices } from '../../services/api/service';
+import { createContext, useContext } from 'react';
+import { createInvoice } from '../../services/api/invoiceService';
 
 interface Test {
   id: string;
@@ -24,18 +21,62 @@ interface ClsModalProps {
   onSave?: (tests: Test[]) => void;
 }
 
-export default function ClsModal({
-  onClose,
-  patientName,
-  patientDob,
-  patientGender,
-  onSave
-}: ClsModalProps) {
+interface SelectedTestsContextType {
+  selectedTests: Test[];
+  addTest: (test: Test) => void;
+  removeTest: (testId: string) => void;
+  clearTests: () => void;
+}
+
+const SelectedTestsContext = createContext<SelectedTestsContextType | undefined>(undefined);
+
+export function SelectedTestsProvider({ children }: { children: React.ReactNode }) {
   const [selectedTests, setSelectedTests] = useState<Test[]>([]);
+
+  const addTest = (test: Test) => {
+    setSelectedTests(prev => [...prev, test]);
+  };
+
+  const removeTest = (testId: string) => {
+    setSelectedTests(prev => prev.filter(test => test.id !== testId));
+  };
+
+  const clearTests = () => {
+    setSelectedTests([]);
+  };
+
+  return (
+    <SelectedTestsContext.Provider value={{ selectedTests, addTest, removeTest, clearTests }}>
+      {children}
+    </SelectedTestsContext.Provider>
+  );
+}
+
+export function useSelectedTests() {
+  const context = useContext(SelectedTestsContext);
+  if (context === undefined) {
+    throw new Error('useSelectedTests must be used within a SelectedTestsProvider');
+  }
+  return context;
+}
+
+export default function ClsModal(props: ClsModalProps) {
+  return (
+    <SelectedTestsProvider>
+      <ClsModalContent {...props} />
+    </SelectedTestsProvider>
+  );
+}
+
+function ClsModalContent({ onClose, patientName, patientDob, patientGender, onSave }: ClsModalProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [services, setServices] = useState<Test[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const { selectedTests, addTest, removeTest } = useSelectedTests();
+
+  const totalPrice = selectedTests.reduce((sum, test) => sum + (test.price || 0), 0);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -64,12 +105,12 @@ export default function ClsModal({
 
   const handleTestSelect = (test: Test) => {
     if (!selectedTests.find(t => t.id === test.id)) {
-      setSelectedTests([...selectedTests, test]);
+      addTest(test);
     }
   };
 
   const removeSelectedTest = (testId: string) => {
-    setSelectedTests(selectedTests.filter(test => test.id !== testId));
+    removeTest(testId);
   };
 
   const handleSave = () => {
@@ -132,18 +173,23 @@ export default function ClsModal({
 
           {/* Selected Tests */}
           {selectedTests.length > 0 && (
-            <div className="p-4 bg-gray-50 flex flex-wrap gap-2">
-              {selectedTests.map(test => (
-                <div
-                  key={test.id}
-                  className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full flex items-center gap-2"
-                >
-                  {test.name}
-                  <button onClick={() => removeSelectedTest(test.id)}>
-                    <XCircle size={16} />
-                  </button>
-                </div>
-              ))}
+            <div className="p-4 bg-gray-50">
+              <div className="flex flex-wrap gap-2 mb-2">
+                {selectedTests.map(test => (
+                  <div
+                    key={test.id}
+                    className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full flex items-center gap-2"
+                  >
+                    {test.name}
+                    <button onClick={() => removeSelectedTest(test.id)}>
+                      <XCircle size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <div className="text-right text-lg font-semibold">
+                Tổng tiền: {totalPrice.toLocaleString()} đ
+              </div>
             </div>
           )}
 

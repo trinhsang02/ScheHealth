@@ -147,7 +147,7 @@ export default function PrescriptionModal({
                   <th className="p-2 text-left">Tên Thuốc</th>
                   <th className="p-2 text-left">Đơn Vị</th>
                   <th className="p-2 text-left">Liều Lượng</th>
-                  <th className="p-2 text-right">Đơn Giá</th>
+      
                   <th className="p-2 text-center">Thao Tác</th>
                 </tr>
               </thead>
@@ -162,9 +162,6 @@ export default function PrescriptionModal({
                     <td className="p-2">{med.name}</td>
                     <td className="p-2">{med.unit}</td>
                     <td className="p-2">{med.dosage}</td>
-                    <td className="p-2 text-right">
-                      {med.price.toLocaleString()} VNĐ
-                    </td>
                     <td className="p-2 text-center">
                       <button
                         onClick={() => handleMedicationSelect(med)}
