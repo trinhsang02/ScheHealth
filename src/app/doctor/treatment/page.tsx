@@ -10,6 +10,8 @@ import {
   getPatientById,
   getPatientProfile,
 } from "@/services/api/patientService";
+import { updateMedicalRecordDiagnosis } from "@/services/api/medicalRecordService";
+import authService from "@/services/api/authService";
 
 interface VitalSign {
   label: string;
@@ -208,22 +210,49 @@ export default function MedicalExaminationPage() {
     );
   };
 
-  const handleSaveExamination = () => {
-    // Collect all examination data
-    const examinationData = {
-      patientInfo,
-      vitalSigns,
-      medicalHistory,
-      examinationReason,
-      clinicalExamination,
-      diagnosis,
-      selectedTests,
-      selectedMedications,
-    };
-
-    // TODO: Implement actual save logic (e.g., API call)
-    console.log("Saving examination data:", examinationData);
-    alert("Đã lưu thông tin khám bệnh");
+  const handleSaveExamination = async () => {
+    try {
+      const userData = authService.getUserData();
+      if (!userData?.id) {
+        throw new Error("Không tìm thấy thông tin bác sĩ");
+      }
+  
+      // Lấy thông tin medical record hiện tại từ sessionStorage hoặc localStorage
+      const currentMedicalRecord = sessionStorage.getItem('currentMedicalRecord');
+      if (!currentMedicalRecord) {
+        throw new Error("Không tìm thấy thông tin medical record");
+      }
+  
+      const medicalRecordId = JSON.parse(currentMedicalRecord).id;
+  
+      // Cập nhật diagnosis trong medical record
+      const updateResponse = await updateMedicalRecordDiagnosis(
+        medicalRecordId,
+        diagnosis // diagnosis là state từ component
+      );
+  
+      if (!updateResponse.success) {
+        throw new Error("Không thể cập nhật chuẩn đoán");
+      }
+  
+      // Collect và log toàn bộ dữ liệu khám
+      const examinationData = {
+        patientInfo,
+        vitalSigns,
+        medicalHistory,
+        examinationReason,
+        clinicalExamination,
+        diagnosis,
+        selectedTests,
+        selectedMedications,
+      };
+      console.log("Đã lưu thông tin khám bệnh:", examinationData);
+      
+      alert("Đã lưu thông tin khám bệnh thành công");
+    } catch (error) {
+      console.error("Lỗi khi lưu thông tin:", error);
+      alert(error instanceof Error ? error.message : "Có lỗi xảy ra khi lưu thông tin");
+    }
   };
 
   return (
