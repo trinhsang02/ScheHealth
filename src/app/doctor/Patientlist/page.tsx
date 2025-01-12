@@ -7,7 +7,7 @@ import {
   fetchAppointmentBySpecialityID,
   updateAppointmentTreatmentStatus,
 } from "../../../services/api/appointmentService";
-import { createMedicalRecord, fetchExistingMedicalRecord} from "../../../services/api/medicalRecordService";
+import { createMedicalRecord, fetchExistingMedicalRecord } from "../../../services/api/medicalRecordService";
 import authService from "../../../services/api/authService";
 
 export default function PatientList() {
@@ -41,7 +41,7 @@ export default function PatientList() {
         // 1. Không có status unpaid
         // 2. Có ngày khám là ngày hôm nay
         const filteredAppointments = response.data.filter(
-          (appointment: appointmentData) => 
+          (appointment: appointmentData) =>
             appointment.status !== "unpaid" &&
             appointment.date.split('T')[0] === todayString
         );
@@ -63,15 +63,17 @@ export default function PatientList() {
         throw new Error("Không tìm thấy ID cuộc hẹn");
       }
 
-      // Lấy thông tin người dùng từ localStorage
       const userData = authService.getUserData();
       if (!userData) {
         throw new Error("Không tìm thấy thông tin người dùng");
       }
 
+      let medicalRecordId: number | null = null;
+
       if (appointment.treatment_status?.toLowerCase() === "in_progress") {
         const existingMedicalRecord = await fetchExistingMedicalRecord(appointment.id);
         if (existingMedicalRecord) {
+          medicalRecordId = existingMedicalRecord.id;
           sessionStorage.setItem(
             'currentMedicalRecord',
             JSON.stringify(existingMedicalRecord)
@@ -96,7 +98,7 @@ export default function PatientList() {
           appointment_id: appointment.id,
           patient_id: appointment.patient_id,
           doctor_id: userData.id,
-          payment_status: 0, // Chưa thanh toán
+          payment_status: 0,
         };
 
         const medicalRecordResponse = await createMedicalRecord(medicalRecordData);
@@ -106,7 +108,8 @@ export default function PatientList() {
           return;
         }
 
-        // Save medical record to sessionStorage
+        medicalRecordId = medicalRecordResponse.data.id;
+
         sessionStorage.setItem(
           'currentMedicalRecord',
           JSON.stringify({
@@ -119,11 +122,14 @@ export default function PatientList() {
       }
 
       // Chuyển hướng đến trang điều trị
-      router.push(`/doctor/treatment?patientId=${appointment.patient_id}`);
+      router.push(
+        `/doctor/treatment?patientId=${appointment.patient_id}&medicalRecordId=${medicalRecordId}`
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Không thể bắt đầu khám");
     }
   };
+
 
   const getTreatmentStatusClass = (status: string): string => {
     const baseClass =
@@ -245,14 +251,13 @@ export default function PatientList() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <button
-                          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium ${
-                            appointment.treatment_status?.toLowerCase() ===
+                          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium ${appointment.treatment_status?.toLowerCase() ===
                               "scheduled" ||
-                            appointment.treatment_status?.toLowerCase() ===
+                              appointment.treatment_status?.toLowerCase() ===
                               "in_progress"
                               ? "bg-blue-500 text-white hover:bg-blue-600"
                               : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                          }`}
+                            }`}
                           disabled={
                             !["scheduled", "in_progress"].includes(
                               appointment.treatment_status?.toLowerCase() || ""
@@ -271,7 +276,7 @@ export default function PatientList() {
                             <path d="M2 12H22" />
                           </svg>
                           {appointment.treatment_status?.toLowerCase() ===
-                          "in_progress"
+                            "in_progress"
                             ? "Tiếp tục"
                             : "Gọi khám"}
                         </button>
@@ -300,11 +305,10 @@ export default function PatientList() {
               {[...Array(totalPages)].map((_, index: number) => (
                 <button
                   key={index + 1}
-                  className={`px-3 py-1.5 border rounded-lg text-sm ${
-                    currentPage === index + 1
+                  className={`px-3 py-1.5 border rounded-lg text-sm ${currentPage === index + 1
                       ? "border-blue-500 bg-blue-500 text-white"
                       : "border-gray-200"
-                  }`}
+                    }`}
                   onClick={() => setCurrentPage(index + 1)}
                 >
                   {index + 1}

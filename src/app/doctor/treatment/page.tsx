@@ -224,6 +224,7 @@ export default function MedicalExaminationPage() {
       }
   
       const medicalRecordId = JSON.parse(currentMedicalRecord).id;
+      console.log("Medical Record ID:", medicalRecordId);
   
       // Cập nhật diagnosis trong medical record
       const updateResponse = await updateMedicalRecordDiagnosis(
@@ -446,6 +447,7 @@ export default function MedicalExaminationPage() {
           patientName={patientInfo.name}
           patientDob={patientInfo.dob}
           patientGender={patientInfo.gender}
+          patientId={Number(patientId)}
         />
       )}
 

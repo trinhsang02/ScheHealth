@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { Printer, Search, XCircle, X} from 'lucide-react';
+import { Printer, Search, XCircle, X } from 'lucide-react';
 import { fectchAllServices } from '../../services/api/service';
 import { createContext, useContext } from 'react';
 import { createInvoice } from '../../services/api/invoiceService';
+import { fetchExistingMedicalRecord } from "../../services/api/medicalRecordService";
 
 interface Test {
   id: string;
@@ -15,10 +16,11 @@ interface Test {
 
 interface ClsModalProps {
   onClose: () => void;
+  onSave: (tests: Test[]) => void;
   patientName: string;
   patientDob: string;
   patientGender: string;
-  onSave?: (tests: Test[]) => void;
+  patientId: number;
 }
 
 interface SelectedTestsContextType {
@@ -68,7 +70,7 @@ export default function ClsModal(props: ClsModalProps) {
   );
 }
 
-function ClsModalContent({ onClose, patientName, patientDob, patientGender, onSave }: ClsModalProps) {
+function ClsModalContent({ onClose, patientName, patientDob, patientGender, patientId, onSave }: ClsModalProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [services, setServices] = useState<Test[]>([]);
@@ -77,6 +79,25 @@ function ClsModalContent({ onClose, patientName, patientDob, patientGender, onSa
   const { selectedTests, addTest, removeTest } = useSelectedTests();
 
   const totalPrice = selectedTests.reduce((sum, test) => sum + (test.price || 0), 0);
+
+  // Get medical record ID safely
+  const getMedicalRecordId = () => {
+    const currentMedicalRecord = sessionStorage.getItem('currentMedicalRecord');
+    if (!currentMedicalRecord) {
+      throw new Error("Không tìm thấy thông tin medical record");
+    }
+    try {
+      const parsedRecord = JSON.parse(currentMedicalRecord);
+      console.log("Medical Record from session:", parsedRecord); // Debug log
+      return parsedRecord.id;
+    } catch (error) {
+      console.error("Error parsing medical record:", error);
+      throw new Error("Lỗi đọc thông tin medical record");
+    }
+  };
+
+  const medicalRecordId = getMedicalRecordId();
+  console.log("Medical Record ID:", medicalRecordId); // Debug log
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -98,6 +119,15 @@ function ClsModalContent({ onClose, patientName, patientDob, patientGender, onSa
     fetchServices();
   }, []);
 
+  // useEffect(() =>{
+  //   const fetchMedicalRecord = async () => {
+  //     try {
+  //       const medicalRecord = await fetchExistingMedicalRecord(patientId);
+  //       if (medicalRecord) {
+  //   }
+  // })
+  console.log("có", medicalRecordId)
+
   const filteredTests = services.filter(test =>
     test.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     String(test.id).toLowerCase().includes(searchTerm.toLowerCase())
@@ -113,9 +143,34 @@ function ClsModalContent({ onClose, patientName, patientDob, patientGender, onSa
     removeTest(testId);
   };
 
-  const handleSave = () => {
-    onSave && onSave(selectedTests);
-    onClose();
+  const handleSave = async () => {
+    try {
+      const invoiceData = {
+        medical_record_id: Number(medicalRecordId),
+        total_price: Math.round(totalPrice),
+        time: new Date().toISOString(),
+        service_ids: selectedTests.map(test => Number(test.id))
+      };
+
+      console.log('Creating invoice with data:', {
+        medicalRecordId,
+        selectedTests,
+        totalPrice,
+        invoiceData
+      });
+
+      const response = await createInvoice(invoiceData);
+      console.log('Invoice creation response:', response);
+
+      if (response.success) {
+        onSave(selectedTests);
+        onClose();
+      } else {
+        throw new Error(response.message || "Lỗi tạo hóa đơn");
+      }
+    } catch (error) {
+      console.error("Error creating invoice:", error);
+    }
   };
 
   return (
