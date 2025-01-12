@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { Printer, Search, XCircle, X } from 'lucide-react';
-import { fectchAllServices } from '../../services/api/service';
-import { createContext, useContext } from 'react';
-import { createInvoice } from '../../services/api/invoiceService';
+import React, { useEffect, useState } from "react";
+import { Printer, Search, XCircle, X } from "lucide-react";
+import { fectchAllServices } from "../../services/api/service";
+import { createContext, useContext } from "react";
+import { createInvoice } from "../../services/api/invoiceService";
 import { fetchExistingMedicalRecord } from "../../services/api/medicalRecordService";
 
 interface Test {
@@ -30,17 +30,23 @@ interface SelectedTestsContextType {
   clearTests: () => void;
 }
 
-const SelectedTestsContext = createContext<SelectedTestsContextType | undefined>(undefined);
+const SelectedTestsContext = createContext<
+  SelectedTestsContextType | undefined
+>(undefined);
 
-export function SelectedTestsProvider({ children }: { children: React.ReactNode }) {
+export function SelectedTestsProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [selectedTests, setSelectedTests] = useState<Test[]>([]);
 
   const addTest = (test: Test) => {
-    setSelectedTests(prev => [...prev, test]);
+    setSelectedTests((prev) => [...prev, test]);
   };
 
   const removeTest = (testId: string) => {
-    setSelectedTests(prev => prev.filter(test => test.id !== testId));
+    setSelectedTests((prev) => prev.filter((test) => test.id !== testId));
   };
 
   const clearTests = () => {
@@ -48,7 +54,9 @@ export function SelectedTestsProvider({ children }: { children: React.ReactNode 
   };
 
   return (
-    <SelectedTestsContext.Provider value={{ selectedTests, addTest, removeTest, clearTests }}>
+    <SelectedTestsContext.Provider
+      value={{ selectedTests, addTest, removeTest, clearTests }}
+    >
       {children}
     </SelectedTestsContext.Provider>
   );
@@ -57,7 +65,9 @@ export function SelectedTestsProvider({ children }: { children: React.ReactNode 
 export function useSelectedTests() {
   const context = useContext(SelectedTestsContext);
   if (context === undefined) {
-    throw new Error('useSelectedTests must be used within a SelectedTestsProvider');
+    throw new Error(
+      "useSelectedTests must be used within a SelectedTestsProvider"
+    );
   }
   return context;
 }
@@ -70,34 +80,44 @@ export default function ClsModal(props: ClsModalProps) {
   );
 }
 
-function ClsModalContent({ onClose, patientName, patientDob, patientGender, patientId, onSave }: ClsModalProps) {
-  const [searchTerm, setSearchTerm] = useState('');
+function ClsModalContent({
+  onClose,
+  patientName,
+  patientDob,
+  patientGender,
+  patientId,
+  onSave,
+}: ClsModalProps) {
+  const [searchTerm, setSearchTerm] = useState("");
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [services, setServices] = useState<Test[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const { selectedTests, addTest, removeTest } = useSelectedTests();
 
-  const totalPrice = selectedTests.reduce((sum, test) => sum + (test.price || 0), 0);
+  const totalPrice = selectedTests.reduce(
+    (sum, test) => sum + (test.price || 0),
+    0
+  );
 
-  // Get medical record ID safely
-  const getMedicalRecordId = () => {
-    const currentMedicalRecord = sessionStorage.getItem('currentMedicalRecord');
-    if (!currentMedicalRecord) {
-      throw new Error("Không tìm thấy thông tin medical record");
-    }
-    try {
-      const parsedRecord = JSON.parse(currentMedicalRecord);
-      console.log("Medical Record from session:", parsedRecord); // Debug log
-      return parsedRecord.id;
-    } catch (error) {
-      console.error("Error parsing medical record:", error);
-      throw new Error("Lỗi đọc thông tin medical record");
-    }
-  };
+  // // Get medical record ID safely
+  // const getMedicalRecordId = () => {
+  //   const currentMedicalRecord = sessionStorage.getItem('currentMedicalRecord');
+  //   if (!currentMedicalRecord) {
+  //     throw new Error("Không tìm thấy thông tin medical record");
+  //   }
+  //   try {
+  //     const parsedRecord = JSON.parse(currentMedicalRecord);
+  //     console.log("Medical Record from session:", parsedRecord); // Debug log
+  //     return parsedRecord.id;
+  //   } catch (error) {
+  //     console.error("Error parsing medical record:", error);
+  //     throw new Error("Lỗi đọc thông tin medical record");
+  //   }
+  // };
 
-  const medicalRecordId = getMedicalRecordId();
-  console.log("Medical Record ID:", medicalRecordId); // Debug log
+  // const medicalRecordId = getMedicalRecordId();
+  // console.log("Medical Record ID:", medicalRecordId); // Debug log
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -126,15 +146,16 @@ function ClsModalContent({ onClose, patientName, patientDob, patientGender, pati
   //       if (medicalRecord) {
   //   }
   // })
-  console.log("có", medicalRecordId)
+  // console.log("có", medicalRecordId);
 
-  const filteredTests = services.filter(test =>
-    test.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    String(test.id).toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTests = services.filter(
+    (test) =>
+      test.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      String(test.id).toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleTestSelect = (test: Test) => {
-    if (!selectedTests.find(t => t.id === test.id)) {
+    if (!selectedTests.find((t) => t.id === test.id)) {
       addTest(test);
     }
   };
@@ -145,31 +166,10 @@ function ClsModalContent({ onClose, patientName, patientDob, patientGender, pati
 
   const handleSave = async () => {
     try {
-      const invoiceData = {
-        medical_record_id: Number(medicalRecordId),
-        total_price: Math.round(totalPrice),
-        time: new Date().toISOString(),
-        service_ids: selectedTests.map(test => Number(test.id))
-      };
-
-      console.log('Creating invoice with data:', {
-        medicalRecordId,
-        selectedTests,
-        totalPrice,
-        invoiceData
-      });
-
-      const response = await createInvoice(invoiceData);
-      console.log('Invoice creation response:', response);
-
-      if (response.success) {
-        onSave(selectedTests);
-        onClose();
-      } else {
-        throw new Error(response.message || "Lỗi tạo hóa đơn");
-      }
+      onSave(selectedTests);
+      onClose();
     } catch (error) {
-      console.error("Error creating invoice:", error);
+      console.error("Error in handleSave:", error);
     }
   };
 
@@ -200,9 +200,9 @@ function ClsModalContent({ onClose, patientName, patientDob, patientGender, pati
           {/* Patient Info */}
           <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50">
             {[
-              { label: 'Bệnh nhân', value: patientName },
-              { label: 'Ngày sinh', value: patientDob },
-              { label: 'Giới tính', value: patientGender }
+              { label: "Bệnh nhân", value: patientName },
+              { label: "Ngày sinh", value: patientDob },
+              { label: "Giới tính", value: patientGender },
             ].map((item, index) => (
               <div key={index} className="flex flex-col">
                 <span className="text-xs text-gray-600">{item.label}</span>
@@ -230,7 +230,7 @@ function ClsModalContent({ onClose, patientName, patientDob, patientGender, pati
           {selectedTests.length > 0 && (
             <div className="p-4 bg-gray-50">
               <div className="flex flex-wrap gap-2 mb-2">
-                {selectedTests.map(test => (
+                {selectedTests.map((test) => (
                   <div
                     key={test.id}
                     className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full flex items-center gap-2"
@@ -263,13 +263,15 @@ function ClsModalContent({ onClose, patientName, patientDob, patientGender, pati
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredTests.map(test => (
+                  {filteredTests.map((test) => (
                     <tr key={test.id} className="border-b hover:bg-gray-50">
                       <td className="p-2">{test.id}</td>
                       <td className="p-2">{test.name}</td>
                       {/* <td className="p-2">{test.price}</td> */}
                       <td className="p-2 text-right">
-                        {test.price ? `${test.price.toLocaleString()} đ` : '0 đ'}
+                        {test.price
+                          ? `${test.price.toLocaleString()} đ`
+                          : "0 đ"}
                       </td>
                       <td className="p-2 text-center">
                         <button
@@ -289,13 +291,18 @@ function ClsModalContent({ onClose, patientName, patientDob, patientGender, pati
           {/* Footer Buttons */}
           <div className="p-4 flex justify-end gap-2 border-t">
             <button
-              onClick={onClose}
+              onClick={() => {
+                onClose();
+              }}
               className="btn bg-gray-200 text-gray-700 px-4 py-2 rounded"
             >
               Hủy
             </button>
+
             <button
-              onClick={handleSave}
+              onClick={() => {
+                handleSave();
+              }}
               className="btn bg-blue-500 text-white px-4 py-2 rounded"
             >
               Lưu chỉ định
@@ -317,21 +324,33 @@ function ClsModalContent({ onClose, patientName, patientDob, patientGender, pati
 
             <div className="text-center mb-6">
               <h3 className="text-xl font-bold">BỆNH VIỆN ABC</h3>
-              <h3 className="text-lg font-semibold">PHIẾU CHỈ ĐỊNH CẬN LÂM SÀNG</h3>
+              <h3 className="text-lg font-semibold">
+                PHIẾU CHỈ ĐỊNH CẬN LÂM SÀNG
+              </h3>
               <p className="text-sm text-gray-600">Số phiếu: CLS-2024-001</p>
             </div>
 
             <div className="bg-gray-50 p-4 rounded mb-6">
               <div className="grid grid-cols-2 gap-4">
-                <p><strong>Họ tên:</strong> {patientName}</p>
-                <p><strong>Ngày sinh:</strong> {patientDob}</p>
-                <p><strong>Giới tính:</strong> {patientGender}</p>
-                <p><strong>Địa chỉ:</strong> Hà Nội</p>
+                <p>
+                  <strong>Họ tên:</strong> {patientName}
+                </p>
+                <p>
+                  <strong>Ngày sinh:</strong> {patientDob}
+                </p>
+                <p>
+                  <strong>Giới tính:</strong> {patientGender}
+                </p>
+                <p>
+                  <strong>Địa chỉ:</strong> Hà Nội
+                </p>
               </div>
             </div>
 
             <div>
-              <h4 className="text-lg font-semibold mb-4">Danh sách chỉ định:</h4>
+              <h4 className="text-lg font-semibold mb-4">
+                Danh sách chỉ định:
+              </h4>
               <table className="w-full">
                 <thead>
                   <tr className="bg-gray-100">

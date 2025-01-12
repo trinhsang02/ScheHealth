@@ -170,14 +170,6 @@ export interface DoctorCreateForm {
   speciality_id: number;
 }
 
-export interface Invoice {
-  id: number;
-  date: string;
-  medicalRecordId: string;
-  totalAmount: number;
-  services: Service[];
-}
-
 export interface InvoiceResponse {
   id: number;
   medical_record_id: number;
@@ -185,4 +177,19 @@ export interface InvoiceResponse {
   total_price: number;
   service_names: string[];
   service_prices: number[];
+}
+
+export interface Invoice {
+  id: number;
+  medical_record_id?: number;
+  time?: string;
+  total_price?: number;
+  service_ids?: number[];
+}
+
+export interface MedicinePrescription {
+  id: number;
+  medical_record_id: number;
+  medicine_ids: number[];
+  quantity: number;
 }
