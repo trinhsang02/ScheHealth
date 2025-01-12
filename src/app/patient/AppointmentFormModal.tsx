@@ -82,7 +82,7 @@ const AppointmentFormModal = ({
       return;
     }
     console.log("accessToken", sessionStorage.getItem("accessToken"));
-
+    
     try {
       const appointmentData = {
         patient_id: Number(authState.user.id),

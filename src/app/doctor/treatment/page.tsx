@@ -5,13 +5,28 @@ import React, { useState, useEffect } from "react";
 import { ChevronLeft, HelpCircle } from "lucide-react";
 import ClsModal from "../ClsModal";
 import PrescriptionModal from "../Prescription";
-import { Medicine } from "../../../services/api/models";
+import {
+  Invoice,
+  Medicine,
+  MedicinePrescription,
+} from "../../../services/api/models";
 import {
   getPatientById,
   getPatientProfile,
 } from "@/services/api/patientService";
-import { updateMedicalRecordDiagnosis } from "@/services/api/medicalRecordService";
+import {
+  createMedicalRecord,
+  isMedicalRecordExist,
+  updateMedicalRecordDiagnosis,
+  updateMedicalRecordPaymentStatus,
+} from "@/services/api/medicalRecordService";
 import authService from "@/services/api/authService";
+import { createInvoice } from "@/services/api/invoiceService";
+import { createMedicinePrescription } from "@/services/api/medicineService";
+import {
+  updateAppointmentStatus,
+  updateAppointmentTreatmentStatus,
+} from "@/services/api/appointmentService";
 
 interface VitalSign {
   label: string;
@@ -32,16 +47,20 @@ interface Test {
 export default function MedicalExaminationPage() {
   const searchParams = useSearchParams();
   const patientId = searchParams.get("patientId");
-
+  const appointmentId = searchParams.get("appointmentId");
+  const medicalRecordId = searchParams.get("medicalRecordId");
+  const userData = authService.getUserData();
+  console.log("userData", userData);
   // State management
   const [vitalSigns, setVitalSigns] = useState<Record<string, string>>({
-    temperature: "",
+    nhiệtđộ: "",
+    huyếtáp: "",
+    nhịptim: "",
+    spo2: "",
+    cânnặng: "",
+    chiềucao: "",
     bloodPressureSystolic: "",
     bloodPressureDiastolic: "",
-    heartRate: "",
-    spO2: "",
-    weight: "",
-    height: "",
   });
 
   const [medicalHistory, setMedicalHistory] = useState("");
@@ -96,7 +115,7 @@ export default function MedicalExaminationPage() {
   const vitalSignsConfig: VitalSign[] = [
     {
       label: "Nhiệt độ",
-      value: vitalSigns.temperature,
+      value: vitalSigns.nhiệtđộ,
       unit: "°C",
       required: true,
       type: "number",
@@ -104,30 +123,30 @@ export default function MedicalExaminationPage() {
     },
     {
       label: "Huyết áp",
-      value: `${vitalSigns.bloodPressureSystolic}/${vitalSigns.bloodPressureDiastolic}`,
+      value: `${vitalSigns.huyếtáp}/${vitalSigns.huyếtáp}`,
       unit: "mmHg",
       required: true,
     },
     {
       label: "Nhịp tim",
-      value: vitalSigns.heartRate,
+      value: vitalSigns.nhịptim,
       unit: "bpm",
       required: true,
     },
     {
       label: "SpO2",
-      value: vitalSigns.spO2,
+      value: vitalSigns.spo2,
       unit: "%",
       required: true,
     },
     {
       label: "Cân nặng",
-      value: vitalSigns.weight,
+      value: vitalSigns.cânnặng,
       unit: "kg",
     },
     {
       label: "Chiều cao",
-      value: vitalSigns.height,
+      value: vitalSigns.chiềucao,
       unit: "cm",
     },
   ];
@@ -140,14 +159,39 @@ export default function MedicalExaminationPage() {
     }));
   };
 
-  const handleClsModalSave = (tests: Test[]) => {
-    setSelectedTests(tests);
-    setShowClsModal(false);
+  const handleClsModalSave = async (tests: Test[]) => {
+    try {
+      console.log("cls modal save - tests:", JSON.stringify(tests, null, 2));
+      setSelectedTests(tests);
+      setShowClsModal(false);
+
+      const invoiceData: Invoice = {
+        id: 0,
+        medical_record_id: Number(medicalRecordId),
+        total_price: tests.reduce((sum, test) => sum + test.price, 0),
+        service_ids: tests.map((test) => Number(test.id)),
+      };
+
+      const invoiceResponse = await createInvoice(invoiceData);
+      console.log("invoiceResponse:", invoiceResponse);
+    } catch (error) {
+      console.error("Error in handleClsModalSave:", error);
+      // Add proper error handling here
+    }
   };
 
-  const handlePrescriptionModalSave = (medications: Medicine[]) => {
+  const handlePrescriptionModalSave = async (medications: Medicine[]) => {
     setSelectedMedications(medications);
+    console.log("selectedMedications", selectedMedications);
     setShowPrescriptionModal(false);
+    const medicinePrescriptionData: MedicinePrescription = {
+      id: 0,
+      medical_record_id: Number(medicalRecordId),
+      medicine_ids: medications.map((med) => med.id),
+      quantity: medications.length,
+    };
+    const response = await createMedicinePrescription(medicinePrescriptionData);
+    console.log("response", response);
   };
 
   const renderVitalSignInput = (sign: VitalSign, index: number) => {
@@ -185,6 +229,12 @@ export default function MedicalExaminationPage() {
       );
     }
 
+    const stateKey = sign.label
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s/g, "");
+
     return (
       <div key={index} className="vital-sign">
         <label className={`${sign.required ? "required" : ""}`}>
@@ -196,13 +246,8 @@ export default function MedicalExaminationPage() {
             step={sign.step}
             className="vital-input"
             placeholder={sign.label}
-            value={vitalSigns[sign.label.toLowerCase().replace(/\s/g, "")]}
-            onChange={(e) =>
-              handleVitalSignChange(
-                sign.label.toLowerCase().replace(/\s/g, ""),
-                e.target.value
-              )
-            }
+            value={vitalSigns[stateKey] || ""}
+            onChange={(e) => handleVitalSignChange(stateKey, e.target.value)}
           />
           <span className="vital-unit">{sign.unit}</span>
         </div>
@@ -212,30 +257,41 @@ export default function MedicalExaminationPage() {
 
   const handleSaveExamination = async () => {
     try {
+      console.log("Saving examination");
       const userData = authService.getUserData();
       if (!userData?.id) {
         throw new Error("Không tìm thấy thông tin bác sĩ");
       }
-  
-      // Lấy thông tin medical record hiện tại từ sessionStorage hoặc localStorage
-      const currentMedicalRecord = sessionStorage.getItem('currentMedicalRecord');
-      if (!currentMedicalRecord) {
-        throw new Error("Không tìm thấy thông tin medical record");
-      }
-  
-      const medicalRecordId = JSON.parse(currentMedicalRecord).id;
+
       console.log("Medical Record ID:", medicalRecordId);
-  
       // Cập nhật diagnosis trong medical record
       const updateResponse = await updateMedicalRecordDiagnosis(
-        medicalRecordId,
+        Number(medicalRecordId),
         diagnosis // diagnosis là state từ component
       );
-  
       if (!updateResponse.success) {
         throw new Error("Không thể cập nhật chuẩn đoán");
       }
-  
+
+      const updateAppointmentResponse = await updateAppointmentTreatmentStatus(
+        Number(appointmentId),
+        "completed"
+      );
+      console.log("updateAppointmentResponse", updateAppointmentResponse);
+      if (!updateAppointmentResponse.success) {
+        throw new Error("Không thể cập nhật trạng thái khám");
+      }
+
+      const updateMedicalRecordPaymentStatusResponse =
+        await updateMedicalRecordPaymentStatus(Number(medicalRecordId));
+      if (!updateMedicalRecordPaymentStatusResponse.success) {
+        throw new Error("Không thể cập nhật trạng thái thanh toán");
+      }
+      console.log(
+        "updateMedicalRecordPaymentStatusResponse",
+        updateMedicalRecordPaymentStatusResponse
+      );
+
       // Collect và log toàn bộ dữ liệu khám
       const examinationData = {
         patientInfo,
@@ -248,11 +304,14 @@ export default function MedicalExaminationPage() {
         selectedMedications,
       };
       console.log("Đã lưu thông tin khám bệnh:", examinationData);
-      
       alert("Đã lưu thông tin khám bệnh thành công");
     } catch (error) {
       console.error("Lỗi khi lưu thông tin:", error);
-      alert(error instanceof Error ? error.message : "Có lỗi xảy ra khi lưu thông tin");
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Có lỗi xảy ra khi lưu thông tin"
+      );
     }
   };
 
@@ -290,7 +349,6 @@ export default function MedicalExaminationPage() {
             active: false,
             onClick: () => setShowPrescriptionModal(true),
           },
-          { label: "Hoàn thành", active: false, success: true },
         ].map((tab, index) => (
           <button
             key={index}
@@ -302,7 +360,6 @@ export default function MedicalExaminationPage() {
                   ? "bg-blue-600 text-white"
                   : "bg-gray-100 text-gray-700"
               }
-              ${tab.success ? "bg-green-600 text-white" : ""}
             `}
           >
             {tab.label}
@@ -443,7 +500,9 @@ export default function MedicalExaminationPage() {
       {showClsModal && (
         <ClsModal
           onClose={() => setShowClsModal(false)}
-          onSave={handleClsModalSave}
+          onSave={(tests) => {
+            handleClsModalSave(tests);
+          }}
           patientName={patientInfo.name}
           patientDob={patientInfo.dob}
           patientGender={patientInfo.gender}

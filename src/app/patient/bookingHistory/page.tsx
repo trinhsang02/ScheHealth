@@ -12,10 +12,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { fetchAppointmentHistory } from "@/services/api/appointmentService";
+import {
+  fetchAppointmentHistory,
+  updateAppointmentTreatmentStatus,
+} from "@/services/api/appointmentService";
 import { AppointmentHistoryResponse } from "@/services/api/models";
 import { updateAppointmentStatus } from "@/services/api/appointmentService";
-
 
 interface BookingHistory {
   id: number;
@@ -24,28 +26,32 @@ interface BookingHistory {
   status: "completed" | "waiting";
 }
 
-
 const BookingHistory: React.FC = () => {
   const [records, setRecords] = useState<AppointmentHistoryResponse[]>([]);
   const [specialities, setSpecialities] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handlePayment = (bookingId: number) => {
+  const handlePayment = async (bookingId: number) => {
     setIsLoading(true);
     try {
-      window.open("https://buy.stripe.com/test_bIY9BF3ew9gV676dQS", "_blank")
-  
+      window.open("https://buy.stripe.com/test_bIY9BF3ew9gV676dQS", "_blank");
+
       // Gọi API để cập nhật trạng thái
-      const response = updateAppointmentStatus(bookingId);
+      const response = await updateAppointmentStatus(bookingId);
       console.log("Appointment status updated:", response);
-  
-      
+
+      const updateAppointmentResponse = await updateAppointmentTreatmentStatus(
+        bookingId,
+        "scheduled"
+      );
+      console.log("updateAppointmentResponse", updateAppointmentResponse);
+
       setRecords((prevRecords) =>
         prevRecords.map((record) =>
           record.id === bookingId ? { ...record, status: "Paid" } : record
         )
       );
-  
+
       alert("Cập nhật trạng thái thành công!");
     } catch (error) {
       console.error("Error updating appointment status:", error);
@@ -79,9 +85,7 @@ const BookingHistory: React.FC = () => {
               <TableHead className="font-medium">Số thứ tự</TableHead>
               <TableHead className="font-medium">Giờ dự kiến</TableHead>
               <TableHead className="font-medium">Chuyên khoa</TableHead>
-              <TableHead className="font-medium">
-                Trạng thái 
-              </TableHead>
+              <TableHead className="font-medium">Trạng thái</TableHead>
               <TableHead className="font-medium text-center">
                 Thao tác
               </TableHead>
