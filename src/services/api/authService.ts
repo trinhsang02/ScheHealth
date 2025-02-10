@@ -143,11 +143,11 @@ class AuthService {
     const userRole = this.getUserRole();
     switch (userRole) {
       case "doctor":
-        return "/doctor/";
+        return "/doctor/homepage";
       case "patient":
         return "/patient/homepage";
       case "admin":
-        return "/admin/";
+        return "/admin/homepage";
       default:
         return "/";
     }
