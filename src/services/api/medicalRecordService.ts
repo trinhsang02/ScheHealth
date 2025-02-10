@@ -1,5 +1,5 @@
 import apiClient from "./api";
-import { AxiosResponse } from 'axios';
+import { AxiosResponse } from "axios";
 import authService from "./authService";
 
 // Định nghĩa interface cho medical record
@@ -27,15 +27,19 @@ export const createMedicalRecord = async (data: MedicalRecordData) => {
   try {
     const token = authService.getToken();
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
-    const response: AxiosResponse = await apiClient.post('/medical-record', data, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+    const response: AxiosResponse = await apiClient.post(
+      "/medical-record",
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       }
-    });
+    );
 
     return response.data;
   } catch (error: any) {
@@ -44,24 +48,43 @@ export const createMedicalRecord = async (data: MedicalRecordData) => {
 };
 
 // Lấy medical record theo appointment ID
-export const fetchExistingMedicalRecord = async (appointmentId: number): Promise<MedicalRecordResponse | null> => {
+export const fetchExistingMedicalRecord = async (
+  appointmentId: number
+): Promise<MedicalRecordResponse | null> => {
   try {
     const token = authService.getToken();
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
-    const response: AxiosResponse = await apiClient.get(`/medical-record/appointment/${appointmentId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
+    const response: AxiosResponse = await apiClient.get(
+      `/medical-record/appointment/${appointmentId}`
+    );
 
     return response.data.data;
   } catch (error: any) {
-    console.error("Error fetching medical record:", error);
+    console.log("Error fetching medical record:", error);
     return null;
+  }
+};
+
+export const isMedicalRecordExist = async (
+  appointmentId: number
+): Promise<{ exist: boolean; id: number }> => {
+  try {
+    const token = authService.getToken();
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    const response: AxiosResponse = await apiClient.get(
+      `/medical-record/is-medical-record-exist/${appointmentId}`
+    );
+
+    return response.data.data;
+  } catch (error: any) {
+    console.log("Error fetching medical record:", error);
+    return { exist: false, id: 0 };
   }
 };
 
@@ -70,15 +93,18 @@ export const fetchSelfMedicalRecords = async () => {
   try {
     const token = authService.getToken();
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
-    const response: AxiosResponse = await apiClient.get('/medical-record/self', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+    const response: AxiosResponse = await apiClient.get(
+      "/medical-record/self",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       }
-    });
+    );
 
     return response.data;
   } catch (error: any) {
@@ -87,11 +113,14 @@ export const fetchSelfMedicalRecords = async () => {
 };
 
 // Cập nhật diagnosis cho medical record
-export const updateMedicalRecordDiagnosis = async (id: number, diagnosis: string) => {
+export const updateMedicalRecordDiagnosis = async (
+  id: number,
+  diagnosis: string
+) => {
   try {
     const token = authService.getToken();
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response: AxiosResponse = await apiClient.put(
@@ -99,9 +128,9 @@ export const updateMedicalRecordDiagnosis = async (id: number, diagnosis: string
       { diagnosis },
       {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       }
     );
 
@@ -116,7 +145,7 @@ export const updateMedicalRecordPaymentStatus = async (id: number) => {
   try {
     const token = authService.getToken();
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response: AxiosResponse = await apiClient.put(
@@ -124,9 +153,9 @@ export const updateMedicalRecordPaymentStatus = async (id: number) => {
       {},
       {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       }
     );
 
@@ -134,29 +163,4 @@ export const updateMedicalRecordPaymentStatus = async (id: number) => {
   } catch (error: any) {
     throw error;
   }
-};
-
-interface VitalSign {
-  medical_record_id: number;
-  name: string;
-  value: number;
-  unit: string;
-  additional_info?: string;
-}
-
-export const createVitalSign = async (vitalSign: VitalSign) => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/medical-records/vital-signs`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    },
-    body: JSON.stringify(vitalSign)
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to create vital sign');
-  }
-
-  return response.json();
 };

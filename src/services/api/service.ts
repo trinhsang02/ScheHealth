@@ -4,7 +4,6 @@ import { ServiceCreateForm } from "./models";
 export const fectchAllServices =  async () => {
     try {
         const response = await apiClient.get('/service/all');
-        console.log("asdasdasda", response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching services:', error);

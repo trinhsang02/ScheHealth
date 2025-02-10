@@ -7,7 +7,12 @@ import {
   fetchAppointmentBySpecialityID,
   updateAppointmentTreatmentStatus,
 } from "../../../services/api/appointmentService";
-import { createMedicalRecord, fetchExistingMedicalRecord} from "../../../services/api/medicalRecordService";
+import {
+  createMedicalRecord,
+  fetchExistingMedicalRecord,
+  isMedicalRecordExist,
+  MedicalRecordData,
+} from "../../../services/api/medicalRecordService";
 import authService from "../../../services/api/authService";
 
 export default function PatientList() {
@@ -32,20 +37,22 @@ export default function PatientList() {
       const response = await fetchAppointmentBySpecialityID(
         userData.speciality_id
       );
+      console.log("appointments", response);
       if (response.success) {
         // Lấy ngày hiện tại
         const today = new Date();
-        const todayString = today.toISOString().split('T')[0];
+        const todayString = today.toISOString().split("T")[0];
 
         // Lọc ra các appointments:
         // 1. Không có status unpaid
         // 2. Có ngày khám là ngày hôm nay
         const filteredAppointments = response.data.filter(
-          (appointment: appointmentData) => 
+          (appointment: appointmentData) =>
             appointment.status !== "unpaid" &&
-            appointment.date.split('T')[0] === todayString
+            appointment.date.split("T")[0] === todayString
         );
         setAppointments(filteredAppointments);
+        // setAppointments(response.data);
       } else {
         setError(response.message);
       }
@@ -56,27 +63,10 @@ export default function PatientList() {
     }
   };
 
-
   const handleStartTreatment = async (appointment: appointmentData) => {
     try {
       if (!appointment.id) {
         throw new Error("Không tìm thấy ID cuộc hẹn");
-      }
-
-      // Lấy thông tin người dùng từ localStorage
-      const userData = authService.getUserData();
-      if (!userData) {
-        throw new Error("Không tìm thấy thông tin người dùng");
-      }
-
-      if (appointment.treatment_status?.toLowerCase() === "in_progress") {
-        const existingMedicalRecord = await fetchExistingMedicalRecord(appointment.id);
-        if (existingMedicalRecord) {
-          sessionStorage.setItem(
-            'currentMedicalRecord',
-            JSON.stringify(existingMedicalRecord)
-          );
-        }
       }
 
       // Chỉ cập nhật trạng thái nếu là 'scheduled'
@@ -85,41 +75,31 @@ export default function PatientList() {
           appointment.id,
           "in_progress"
         );
+      }
 
-        if (!response.success) {
-          setError(response.message);
-          return;
-        }
-
-        // Tạo medical record mới
-        const medicalRecordData = {
-          appointment_id: appointment.id,
-          patient_id: appointment.patient_id,
-          doctor_id: userData.id,
-          payment_status: 0, // Chưa thanh toán
+      let { exist, id } = await isMedicalRecordExist(Number(appointment.id));
+      if (exist) {
+        console.log("Medical record already exists, id:", id);
+      } else {
+        const userData = authService.getUserData();
+        const medicalRecordData: MedicalRecordData = {
+          appointment_id: Number(appointment.id),
+          patient_id: Number(appointment.patient_id),
+          doctor_id: Number(userData?.id),
+          diagnosis: "",
+          payment_status: 0,
         };
-
-        const medicalRecordResponse = await createMedicalRecord(medicalRecordData);
-
-        if (!medicalRecordResponse.success) {
-          setError("Không thể tạo hồ sơ khám bệnh");
-          return;
+        const response = await createMedicalRecord(medicalRecordData);
+        if (response.success) {
+          console.log("medical record id", response.data);
+          id = response.data;
         }
-
-        // Save medical record to sessionStorage
-        sessionStorage.setItem(
-          'currentMedicalRecord',
-          JSON.stringify({
-            id: medicalRecordResponse.data.id,
-            ...medicalRecordData
-          })
-        );
-
-        await fetchAppointments();
       }
 
       // Chuyển hướng đến trang điều trị
-      router.push(`/doctor/treatment?patientId=${appointment.patient_id}`);
+      router.push(
+        `/doctor/treatment?patientId=${appointment.patient_id}&appointmentId=${appointment.id}&medicalRecordId=${id}`
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Không thể bắt đầu khám");
     }
@@ -218,67 +198,72 @@ export default function PatientList() {
                 </tr>
               </thead>
               <tbody>
-                {currentAppointments.map((appointment: appointmentData, index: number) => (
-                  <tr
-                    key={appointment.id}
-                    className="border-t border-gray-100 hover:bg-gray-50"
-                  >
-                    <td className="px-4 py-3">{startIndex + index + 1}</td>
-                    <td className="px-4 py-3">{appointment.patient_name}</td>
-                    <td className="px-4 py-3">{appointment.patient_phone}</td>
-                    <td className="px-4 py-3">
-                      {appointment.patient_birthday}
-                    </td>
-                    <td className="px-4 py-3">{appointment.date}</td>
-                    <td className="px-4 py-3">{appointment.patient_reason}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={getTreatmentStatusClass(
-                          appointment.treatment_status || "scheduled"
-                        )}
-                      >
-                        {getTreatmentStatusText(
-                          appointment.treatment_status || "scheduled"
-                        )}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <button
-                          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium ${
-                            appointment.treatment_status?.toLowerCase() ===
-                              "scheduled" ||
-                            appointment.treatment_status?.toLowerCase() ===
-                              "in_progress"
-                              ? "bg-blue-500 text-white hover:bg-blue-600"
-                              : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                          }`}
-                          disabled={
-                            !["scheduled", "in_progress"].includes(
-                              appointment.treatment_status?.toLowerCase() || ""
-                            )
-                          }
-                          onClick={() => handleStartTreatment(appointment)}
+                {currentAppointments.map(
+                  (appointment: appointmentData, index: number) => (
+                    <tr
+                      key={appointment.id}
+                      className="border-t border-gray-100 hover:bg-gray-50"
+                    >
+                      <td className="px-4 py-3">{startIndex + index + 1}</td>
+                      <td className="px-4 py-3">{appointment.patient_name}</td>
+                      <td className="px-4 py-3">{appointment.patient_phone}</td>
+                      <td className="px-4 py-3">
+                        {appointment.patient_birthday}
+                      </td>
+                      <td className="px-4 py-3">{appointment.date}</td>
+                      <td className="px-4 py-3">
+                        {appointment.patient_reason}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={getTreatmentStatusClass(
+                            appointment.treatment_status || "scheduled"
+                          )}
                         >
-                          <svg
-                            className="w-4 h-4"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
+                          {getTreatmentStatusText(
+                            appointment.treatment_status || "scheduled"
+                          )}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <button
+                            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium ${
+                              appointment.treatment_status?.toLowerCase() ===
+                                "scheduled" ||
+                              appointment.treatment_status?.toLowerCase() ===
+                                "in_progress"
+                                ? "bg-blue-500 text-white hover:bg-blue-600"
+                                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                            }`}
+                            disabled={
+                              !["scheduled", "in_progress"].includes(
+                                appointment.treatment_status?.toLowerCase() ||
+                                  ""
+                              )
+                            }
+                            onClick={() => handleStartTreatment(appointment)}
                           >
-                            <path d="M18 8L22 12L18 16" />
-                            <path d="M2 12H22" />
-                          </svg>
-                          {appointment.treatment_status?.toLowerCase() ===
-                          "in_progress"
-                            ? "Tiếp tục"
-                            : "Gọi khám"}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                            <svg
+                              className="w-4 h-4"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                            >
+                              <path d="M18 8L22 12L18 16" />
+                              <path d="M2 12H22" />
+                            </svg>
+                            {appointment.treatment_status?.toLowerCase() ===
+                            "in_progress"
+                              ? "Tiếp tục"
+                              : "Gọi khám"}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                )}
               </tbody>
             </table>
           </div>

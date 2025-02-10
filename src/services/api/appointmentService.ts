@@ -1,7 +1,7 @@
 import apiClient from "./api";
 import { appointmentData, AppointmentHistoryResponse } from "./models";
 import authService from "./authService";
-import { AxiosResponse } from 'axios';
+import { AxiosResponse } from "axios";
 
 export const createAppointment = async (appointmentData: appointmentData) => {
   try {
@@ -29,15 +29,18 @@ export const fetchAppointmentBySpecialityID = async (specialityId: number) => {
     const token = authService.getToken();
 
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
-    const response: AxiosResponse = await apiClient.get(`/appointment/specialty/${specialityId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+    const response: AxiosResponse = await apiClient.get(
+      `/appointment/specialty/${specialityId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       }
-    });
+    );
 
     return response.data;
   } catch (error: any) {
@@ -49,13 +52,14 @@ export const updateAppointmentStatus = async (id: number) => {
   try {
     const token = authService.getToken();
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
-    const response: AxiosResponse = await apiClient.put(`/appointment/status/${id}`,
+    const response: AxiosResponse = await apiClient.put(
+      `/appointment/status/${id}`,
       {
-        status: 'paid'
-      },
+        status: "Paid",
+      }
       // {
       //   headers: {
       //     'Authorization': `Bearer ${token}`,
@@ -70,23 +74,20 @@ export const updateAppointmentStatus = async (id: number) => {
   }
 };
 
-export const updateAppointmentTreatmentStatus = async (id: number, treatmentStatus: string) => {
+export const updateAppointmentTreatmentStatus = async (
+  id: number,
+  treatmentStatus: string
+) => {
   try {
     const token = authService.getToken();
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error("No authentication token found");
     }
 
     const response: AxiosResponse = await apiClient.put(
       `/appointment/treatment-status/${id}`,
       {
-        treatment_status: treatmentStatus
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+        treatment_status: treatmentStatus,
       }
     );
 

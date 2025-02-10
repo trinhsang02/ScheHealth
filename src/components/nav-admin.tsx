@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Folder,
@@ -6,7 +6,7 @@ import {
   MoreHorizontal,
   Trash2,
   type LucideIcon,
-} from "lucide-react"
+} from "lucide-react";
 
 import {
   DropdownMenu,
@@ -14,7 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -22,8 +22,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { useState } from 'react'
+} from "@/components/ui/sidebar";
+import { useState } from "react";
 
 export function NavAdmin({
   projects,
@@ -31,14 +31,14 @@ export function NavAdmin({
   setSelectedItem,
 }: {
   projects: {
-    name: string
-    url: string
-    icon: LucideIcon
-  }[],
-  selectedItem: string | null,
-  setSelectedItem: React.Dispatch<React.SetStateAction<string | null>>,
+    name: string;
+    url: string;
+    icon: LucideIcon;
+  }[];
+  selectedItem: string | null;
+  setSelectedItem: React.Dispatch<React.SetStateAction<string | null>>;
 }) {
-  const { isMobile } = useSidebar()
+  const { isMobile } = useSidebar();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -46,10 +46,14 @@ export function NavAdmin({
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
-            <a 
-                href={item.url} 
+              <a
+                href={item.url}
                 onClick={() => setSelectedItem(item.name)}
-                className={selectedItem === item.name ? 'text-blue-500' : ''}
+                className={`${
+                  selectedItem === item.name
+                    ? "text-blue-500 font-bold bg-blue-100 dark:bg-blue-900/50"
+                    : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
               >
                 <item.icon />
                 <span>{item.name}</span>
@@ -59,5 +63,5 @@ export function NavAdmin({
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }
