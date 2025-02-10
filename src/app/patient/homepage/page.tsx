@@ -5,6 +5,7 @@ import hospitalImage from '../../../assets/hospital-image.png';
 import ServiceSelectionModal from '../ServiceSelectionModal';
 import AppointmentFormModal from '../AppointmentFormModal';
 import { InvoiceModal } from '@/components/invoice/invoice-modal';
+import BookingSupportModal from '@/components/BookingSupportModal';
 import { Button } from '@/components/ui/button';
 import MedicalChatbot from '../MedicalChatbot';
 
@@ -12,6 +13,7 @@ export default function MainViewPatient() {
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [showAppointmentModal, setShowAppointmentModal] = useState(false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [showSupportModal, setShowSupportModal] = useState(false);
 
   const handleBookingClick = () => {
     setShowServiceModal(true);
@@ -24,6 +26,10 @@ export default function MainViewPatient() {
   
   const handleInvoiceLookup = () => {
     setShowInvoiceModal(true);
+  };
+
+  const handleSupportClick = () => {
+    setShowSupportModal(true);
   };
 
   return (
@@ -40,7 +46,10 @@ export default function MainViewPatient() {
         </div>
 
         <div className="flex justify-center gap-4">
-          <QuickActionButton text="Hỗ trợ đặt khám" />
+          <QuickActionButton 
+            text="Hỗ trợ đặt khám" 
+            onClick={handleSupportClick}
+          />
           <Button variant="link" onClick={handleInvoiceLookup}>Tra cứu hóa đơn</Button>
         </div>
 
@@ -72,6 +81,11 @@ export default function MainViewPatient() {
       <InvoiceModal 
         open={showInvoiceModal} 
         onOpenChange={setShowInvoiceModal} 
+      />
+
+      <BookingSupportModal
+        isOpen={showSupportModal}
+        onClose={() => setShowSupportModal(false)}
       />
 
       <MedicalChatbot />
