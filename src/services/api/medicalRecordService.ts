@@ -135,3 +135,28 @@ export const updateMedicalRecordPaymentStatus = async (id: number) => {
     throw error;
   }
 };
+
+interface VitalSign {
+  medical_record_id: number;
+  name: string;
+  value: number;
+  unit: string;
+  additional_info?: string;
+}
+
+export const createVitalSign = async (vitalSign: VitalSign) => {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/medical-records/vital-signs`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    },
+    body: JSON.stringify(vitalSign)
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to create vital sign');
+  }
+
+  return response.json();
+};

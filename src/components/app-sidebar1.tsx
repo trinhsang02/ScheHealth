@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import * as React from "react"
 import {
     Frame,
@@ -25,7 +26,7 @@ import {
     SidebarHeader,
     SidebarRail,
 } from "@/components/ui/sidebar"
-
+import logo from "@/assets/logo.png"
 
 // This is sample data.
 const data = {
@@ -87,7 +88,14 @@ export function AppSidebarAdmin({ ...props }: React.ComponentProps<typeof Sideba
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
-                <span className="text-xl font-bold p-2">ScheHealth</span>
+                <Image
+                src={logo}
+                alt="ScheHealth Logo"
+                width={150}
+                height={40}
+                priority
+                className="p-5"
+                />
             </SidebarHeader>
             <SidebarContent>
                 <NavAdmin projects={data.admin} selectedItem={selectedItem} setSelectedItem={setSelectedItem} />

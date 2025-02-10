@@ -1,5 +1,10 @@
 import { StringToBoolean } from "class-variance-authority/types";
 
+export interface PasswordUpdateData {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface UserData {
   id: number;
   email: string;

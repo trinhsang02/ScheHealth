@@ -1,5 +1,5 @@
 import apiClient from "./api";
-import { PatientProfile } from "./models";
+import { PatientProfile, PasswordUpdateData } from "./models";
 
 export const getPatientProfile = async (): Promise<PatientProfile> => {
   try {
@@ -53,5 +53,20 @@ export const getPatientById = async (id: number): Promise<PatientProfile> => {
   } catch (error) {
     console.error("Failed to fetch patient profile:", error);
     throw new Error("Unable to fetch patient profile. Please try again later.");
+  }
+};
+
+export const updatePassword = async (updateData: PasswordUpdateData): Promise<void> => {
+  try {
+    const response = await apiClient.put('/patient/password', updateData);
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Failed to update password');
+    }
+  } catch (error: any) {
+    console.error('Failed to update password:', error?.response?.data || error);
+    if (error?.response?.data?.message === 'Current password is incorrect') {
+      throw new Error('Mật khẩu hiện tại không chính xác');
+    }
+    throw new Error('Không thể đổi mật khẩu. Vui lòng thử lại sau.');
   }
 };

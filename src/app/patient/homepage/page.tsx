@@ -6,6 +6,7 @@ import ServiceSelectionModal from '../ServiceSelectionModal';
 import AppointmentFormModal from '../AppointmentFormModal';
 import { InvoiceModal } from '@/components/invoice/invoice-modal';
 import { Button } from '@/components/ui/button';
+import MedicalChatbot from '../MedicalChatbot';
 
 export default function MainViewPatient() {
   const [showServiceModal, setShowServiceModal] = useState(false);
@@ -74,6 +75,8 @@ export default function MainViewPatient() {
         open={showInvoiceModal} 
         onOpenChange={setShowInvoiceModal} 
       />
+
+      <MedicalChatbot />
     </div>
   );
 }

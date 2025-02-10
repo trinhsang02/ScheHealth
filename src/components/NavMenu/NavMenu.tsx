@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import React, { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/menubar";
 import { Button } from "../ui/button";
 import authService from "../../services/api/authService";
+import logo from "@/assets/logo.png";
 
 export function NavMenu({ role }: { role?: string }) {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
@@ -33,7 +35,14 @@ export function NavMenu({ role }: { role?: string }) {
     <header className="w-full border-b bg-white">
       <div className="flex h-16 items-center justify-between">
         <Link href="/patient/homepage" className="flex items-center space-x-2">
-          <span className="text-xl font-bold p-5">ScheHealth</span>
+          <Image
+            src={logo}
+            alt="ScheHealth Logo"
+            width={150}
+            height={40}
+            priority
+            className="p-5"
+          />
         </Link>
         <nav className="flex items-center space-x-6 justify-end p-5">
 
@@ -86,7 +95,7 @@ export function NavMenu({ role }: { role?: string }) {
                   </MenubarItem>
                   <MenubarItem>
                     <Button variant="link">
-                      <Link href="/patient/">Bảo mật</Link>
+                      <Link href="/patient/security">Bảo mật</Link>
                     </Button>
                   </MenubarItem>
                   <MenubarItem>
