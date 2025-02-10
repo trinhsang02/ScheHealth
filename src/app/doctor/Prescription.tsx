@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Printer, Search, XCircle, X } from 'lucide-react';
-import { fetchAllMedicines } from '../../services/api/medicineService';
+import React, { useState, useEffect } from "react";
+import { Printer, Search, XCircle, X } from "lucide-react";
+import { fetchAllMedicines } from "../../services/api/medicineService";
 
 interface Medication {
   id: number;
@@ -29,10 +29,12 @@ export default function PrescriptionModal({
   patientName,
   patientDob,
   patientGender,
-  onSave
+  onSave,
 }: PrescriptionModalProps) {
-  const [selectedMedications, setSelectedMedications] = useState<Medication[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedMedications, setSelectedMedications] = useState<Medication[]>(
+    []
+  );
+  const [searchTerm, setSearchTerm] = useState("");
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [medications, setMedications] = useState<Medication[]>([]);
 
@@ -42,25 +44,28 @@ export default function PrescriptionModal({
         const data = await fetchAllMedicines();
         setMedications(data);
       } catch (error) {
-        console.error('Error fetching medications:', error);
+        console.error("Error fetching medications:", error);
       }
     };
     loadMedications();
   }, []);
 
-  const filteredMedications = medications.filter(med =>
-    med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    med.id.toString().includes(searchTerm)
+  const filteredMedications = medications.filter(
+    (med) =>
+      med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      med.id.toString().includes(searchTerm)
   );
 
   const handleMedicationSelect = (medication: Medication) => {
-    if (!selectedMedications.find(m => m.id === medication.id)) {
+    if (!selectedMedications.find((m) => m.id === medication.id)) {
       setSelectedMedications([...selectedMedications, medication]);
     }
   };
 
   const removeSelectedMedication = (medicationId: number) => {
-    setSelectedMedications(selectedMedications.filter(med => med.id !== medicationId));
+    setSelectedMedications(
+      selectedMedications.filter((med) => med.id !== medicationId)
+    );
   };
 
   const handleSave = () => {
@@ -95,9 +100,9 @@ export default function PrescriptionModal({
           {/* Patient Info */}
           <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50">
             {[
-              { label: 'Bệnh nhân', value: patientName },
-              { label: 'Ngày sinh', value: patientDob },
-              { label: 'Giới tính', value: patientGender }
+              { label: "Bệnh nhân", value: patientName },
+              { label: "Ngày sinh", value: patientDob },
+              { label: "Giới tính", value: patientGender },
             ].map((item, index) => (
               <div key={index} className="flex flex-col">
                 <span className="text-xs text-gray-600">{item.label}</span>
@@ -124,7 +129,7 @@ export default function PrescriptionModal({
           {/* Selected Medications */}
           {selectedMedications.length > 0 && (
             <div className="p-4 bg-gray-50 flex flex-wrap gap-2">
-              {selectedMedications.map(med => (
+              {selectedMedications.map((med) => (
                 <div
                   key={med.id}
                   className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full flex items-center gap-2"
@@ -147,12 +152,12 @@ export default function PrescriptionModal({
                   <th className="p-2 text-left">Tên Thuốc</th>
                   <th className="p-2 text-left">Đơn Vị</th>
                   <th className="p-2 text-left">Liều Lượng</th>
-      
+
                   <th className="p-2 text-center">Thao Tác</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredMedications.map(med => (
+                {filteredMedications.map((med) => (
                   <tr
                     key={med.id}
                     className="border-b hover:bg-gray-50 relative group"
@@ -162,19 +167,19 @@ export default function PrescriptionModal({
                     <td className="p-2">{med.name}</td>
                     <td className="p-2">{med.unit}</td>
                     <td className="p-2">{med.dosage}</td>
-                    <td className="p-2 text-center">
+                    <td className="p-2 text-center relative">
                       <button
                         onClick={() => handleMedicationSelect(med)}
                         className="text-blue-500 hover:bg-blue-100 px-2 py-1 rounded"
                       >
                         Chọn
                       </button>
-                    </td>
 
-                    <div className="hidden group-hover:block absolute z-50 bg-gray-500 text-white p-2 rounded text-sm w-64 left-1/2 transform -translate-x-1/2 -translate-y-full top-0">
-                      <p className="font-semibold">Tác dụng phụ:</p>
-                      <p>{med.side_effects}</p>
-                    </div>
+                      <div className="hidden group-hover:block absolute z-50 bg-gray-500 text-white p-2 rounded text-sm w-64 left-1/2 transform -translate-x-1/2 -translate-y-full top-0">
+                        <p className="font-semibold">Tác dụng phụ:</p>
+                        <p>{med.side_effects}</p>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -211,17 +216,25 @@ export default function PrescriptionModal({
             </button>
 
             <div className="text-center mb-6">
-              <h3 className="text-xl font-bold">BỆNH VIỆN ABC</h3>
+              <h3 className="text-xl font-bold">BỆNH VIỆN SE100</h3>
               <h3 className="text-lg font-semibold">ĐƠN THUỐC</h3>
               <p className="text-sm text-gray-600">Số đơn: DT-2024-001</p>
             </div>
 
             <div className="bg-gray-50 p-4 rounded mb-6">
               <div className="grid grid-cols-2 gap-4">
-                <p><strong>Họ tên:</strong> {patientName}</p>
-                <p><strong>Ngày sinh:</strong> {patientDob}</p>
-                <p><strong>Giới tính:</strong> {patientGender}</p>
-                <p><strong>Địa chỉ:</strong> Hà Nội</p>
+                <p>
+                  <strong>Họ tên:</strong> {patientName}
+                </p>
+                <p>
+                  <strong>Ngày sinh:</strong> {patientDob}
+                </p>
+                <p>
+                  <strong>Giới tính:</strong> {patientGender}
+                </p>
+                <p>
+                  <strong>Địa chỉ:</strong> Hà Nội
+                </p>
               </div>
             </div>
 
@@ -234,8 +247,6 @@ export default function PrescriptionModal({
                     <th className="p-2 text-left">Mã Thuốc</th>
                     <th className="p-2 text-left">Tên Thuốc</th>
                     <th className="p-2 text-left">Liều Lượng</th>
-                    <th className="p-2 text-left">Tần Suất</th>
-                    <th className="p-2 text-left">Thời Gian</th>
                   </tr>
                 </thead>
                 <tbody>
